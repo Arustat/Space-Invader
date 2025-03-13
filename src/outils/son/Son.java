@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * <p>Copyright : Copyright (c) 2007</p>
  *
- * <p>Société : </p>
+ * <p>Sociï¿½tï¿½ : </p>
  *
  * @author non attribuable
  * @version 1.0
@@ -20,11 +20,11 @@ import java.io.Serializable;
 
 public class Son implements Serializable {
 
-    //--- propriétés ---
+    //--- propriï¿½tï¿½s ---
     private String son ;
     private Sound sound ;
 
-    //--- constructeur : charge en mémoire le son ---
+    //--- constructeur : charge en mï¿½moire le son ---
     public Son (String nomfic) {
         this.son = nomfic ;
         try {
@@ -38,7 +38,7 @@ public class Son implements Serializable {
         this.sound.boucle(1) ;
     }
 
-    //--- pour libérer la mémoire du son ---
+    //--- pour libï¿½rer la mï¿½moire du son ---
     public void close() {
         this.sound.fermer();
     }

@@ -194,7 +194,7 @@ public class Arene extends JFrame implements Global {
 				lesson[i] = new Son(CHEMINSONS+SON[i]);
 			}
 		}
-		(new Son(SONAMBIANCE)).playContinue() ; 
+		//(new Son(SONAMBIANCE)).playContinue() ; 
 		
 	}
 	

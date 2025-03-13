@@ -12,7 +12,9 @@ public interface Global {
 	// fichiers
 	public static final String
 		SEPARATOR = "//",
-		CHEMIN = "../media/",
+		CHEMIN = "media" + SEPARATOR,
+		CHEMINS = "assets" + SEPARATOR,
+		CHEMINFOND = CHEMINS + "Background" + SEPARATOR,
 		CHEMINFONDS = CHEMIN + "fonds" + SEPARATOR,
 		CHEMINPERSOS = CHEMIN + "personnages" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
@@ -22,6 +24,7 @@ public interface Global {
 
 	// images
 	public static final String
+	BACKGROUND = CHEMINFOND + "start.png",
 	FONDCHOIX = CHEMINFONDS + "fondchoix.jpg",	
 	FONDARENE = CHEMINFONDS+"fondarene.jpg",
 	MUR = CHEMINMURS + "mur.gif",
@@ -88,7 +91,7 @@ public interface Global {
 		
 	
 	public static final String[]
-			SON = {"fight.wav","hurt.wav","death.wav"};
+		SON = {"fight.wav","hurt.wav","death.wav"};
 		
 		
 	
