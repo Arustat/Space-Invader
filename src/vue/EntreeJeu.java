@@ -86,11 +86,11 @@ public class EntreeJeu extends JFrame implements Global{
 	        
 	        if (is != null) {
 	            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
-	            dotFont = font.deriveFont(20f);  // Taille de la police (20 points)
+	            dotFont = font.deriveFont(30f);  // Taille de la police (20 points)
 	            
 	            // Enregistre la police dans le système graphique
 	            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	            ge.registerFont(retroFont);
+	            ge.registerFont(dotFont);
 	        } else {
 	            System.err.println("Police non trouvée.");
 	            dotFont = new Font("Monospaced", Font.BOLD, 20);  // Police par défaut si erreur
@@ -124,7 +124,7 @@ public class EntreeJeu extends JFrame implements Global{
 
 		// Ajouter le panneau d'image de fond au niveau inférieur (niveau 0)
 		Background backgroundPanel = new Background(BACKGROUND);
-		backgroundPanel.setBounds(0, 0, 800, 700); // Définir la taille du Background
+		backgroundPanel.setBounds(0, 0, 800, 700); // Définit la taille du Background
 		layeredPane.add(backgroundPanel, Integer.valueOf(0));
 
 		// Ajouter le contentPane au niveau supérieur (niveau 1)
@@ -139,15 +139,15 @@ public class EntreeJeu extends JFrame implements Global{
         JLabel lblIpServer = new JLabel("IP server:");
         lblIpServer.setFont(retroFont);
         lblIpServer.setForeground(textcolor);
-        lblIpServer.setBounds(200, 30, 200, 25);
+        lblIpServer.setBounds(200, 0, 200, 25);
         contentPane.add(lblIpServer);
         
         txtIp = new JTextField();
 		txtIp.setText("127.0.0.1");
-		txtIp.setBounds(200, 60, 200, 30);
+		txtIp.setBounds(200, 40, 200, 30);
 		contentPane.add(txtIp);
 		
-		JButton btnConnect = createRetroButton("Connect", 250, 100);
+		JButton btnConnect = createRetroButton("Play", 200, 80);
 		btnConnect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -157,13 +157,13 @@ public class EntreeJeu extends JFrame implements Global{
 		contentPane.add(btnConnect);
 
 		
-		JLabel lblStartAServer = new JLabel("Start a server :");
+		JLabel lblStartAServer = new JLabel("Start a server:");
 		lblStartAServer.setFont(retroFont);
         lblStartAServer.setForeground(textcolor);
-		lblStartAServer.setBounds(160, 150, 400, 25);
+		lblStartAServer.setBounds(160, 140, 400, 25);
 		contentPane.add(lblStartAServer);
 		
-		JButton btnStart = createRetroButton("Start", 250, 180);
+		JButton btnStart = createRetroButton("Start", 200, 180);
 		btnStart.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -173,7 +173,7 @@ public class EntreeJeu extends JFrame implements Global{
 		contentPane.add(btnStart);
 	
 			
-		JButton btnExit = createRetroButton("Exit", 250, 230);
+		JButton btnExit = createRetroButton("Exit", 200, 230);
 		btnExit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -181,6 +181,14 @@ public class EntreeJeu extends JFrame implements Global{
 			}
 		});
 		contentPane.add(btnExit);
+		
+		JLabel copyrightLabel = new JLabel("Copyright © VIDEOGAMO, INC. 2012");
+		copyrightLabel.setForeground(Color.WHITE);
+		Font copyrightFont = retroFont.deriveFont(11f);
+		copyrightLabel.setFont(copyrightFont);  
+		copyrightLabel.setBounds(125, 279, 400, 30); 
+		contentPane.add(copyrightLabel);
+
 		
 		// r�cup�ration du controleur
 		this.controle = controle ;
@@ -191,12 +199,12 @@ public class EntreeJeu extends JFrame implements Global{
 		loadDotFont();
 		
         JButton button = new JButton(text);
-        button.setBounds(x, y, 100, 30);
+        button.setBounds(x, y, 200, 40);
 
         // Style rétro minimaliste
         button.setBackground(Color.BLACK);
         button.setForeground(Color.WHITE);
-        button.setFont(dotFont);
+        button.setFont(retroFont);
         button.setFocusPainted(false);
 
         // Bordure standard blanche (ou cyan, si tu préfères)
@@ -205,11 +213,56 @@ public class EntreeJeu extends JFrame implements Global{
         button.setOpaque(true);
 
         // Rendre le bouton Connect plus flashy
-        if ("Connect".equals(text)) {
-            button.setBorder(new LineBorder(Color.GREEN, 3));
-            button.setBackground(new Color(0, 128, 0));
-            button.setFont(retroFont);
+        if ("Start".equals(text)) {
+            button.setFont(dotFont);
+        }else if ("Play".equals(text)) {
+        	Font playFont = retroFont.deriveFont(25f);
+        	button.setFont(playFont);
         }
+        
+        // Animation de hover
+        final int normalWidth = 200;
+        final int normalHeight = 40;
+        final int enlargedWidth = 220;  
+        final int enlargedHeight = 45;
+        final int animationStep = 1;
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                new Thread(() -> {
+                    for (int i = normalWidth; i <= enlargedWidth; i += animationStep) {
+                        final int currentWidth = i;
+                        final int currentHeight = (int) (normalHeight + (i - normalWidth) * ((double) (enlargedHeight - normalHeight) / (enlargedWidth - normalWidth)));
+                        
+                        button.setBounds(x - (currentWidth - normalWidth) / 2, y - (currentHeight - normalHeight) / 2, currentWidth, currentHeight);
+                        try {
+                            Thread.sleep(5); 
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                new Thread(() -> {
+                    for (int i = enlargedWidth; i >= normalWidth; i -= animationStep) {
+                        final int currentWidth = i;
+                        final int currentHeight = (int) (normalHeight + (i - normalWidth) * ((double) (enlargedHeight - normalHeight) / (enlargedWidth - normalWidth)));
+                        
+                        button.setBounds(x - (currentWidth - normalWidth) / 2, y - (currentHeight - normalHeight) / 2, currentWidth, currentHeight);
+                        try {
+                            Thread.sleep(5);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        });
+
         return button;
     }
 }
