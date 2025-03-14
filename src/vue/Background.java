@@ -1,12 +1,15 @@
 package vue;
 
 import javax.swing.*;
+
+import controleur.Global;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class Background extends JPanel {
+public class Background extends JPanel implements Global{
     private Image backgroundImage;
 
     public Background(String filePath) {

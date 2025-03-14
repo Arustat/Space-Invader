@@ -15,7 +15,7 @@ public interface Global {
 		CHEMIN = "media" + SEPARATOR,
 		CHEMINS = "assets" + SEPARATOR,
 		CHEMINFOND = CHEMINS + "Background" + SEPARATOR,
-		CHEMINFONDS = CHEMIN + "fonds" + SEPARATOR,
+		CHEMINFONDP = CHEMINS + "Background" + SEPARATOR,
 		CHEMINPERSOS = CHEMIN + "personnages" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
 		CHEMINBOULES = CHEMIN+"boules"+ SEPARATOR ,
@@ -25,8 +25,8 @@ public interface Global {
 	// images
 	public static final String
 	BACKGROUND = CHEMINFOND + "start.png",
-	FONDCHOIX = CHEMINFONDS + "fondchoix.jpg",	
-	FONDARENE = CHEMINFONDS+"fondarene.jpg",
+	FONDCHOIX = CHEMINFONDP + "Layers/",	
+	FONDARENE = CHEMINFOND +"fondarene.jpg",
 	MUR = CHEMINMURS + "mur.gif",
 	BOULE = CHEMINBOULES +"boule.gif";
 	
@@ -62,9 +62,9 @@ public interface Global {
 	
 	// tailles
 	public static final int
-		H_ARENE = 600,
+		H_ARENE = 700,
 		L_ARENE = 800,
-		H_CHAT = 200,
+		H_CHAT = 0,
 		H_MESSAGE = 8,
 		H_SAISIE = 25,
 		MARGE = 5 ; // �carts entre les objets

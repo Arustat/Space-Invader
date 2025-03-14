@@ -1,10 +1,15 @@
 package vue;
 
+import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -16,6 +21,7 @@ import outils.son.Son;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -34,6 +40,7 @@ public class Arene extends JFrame implements Global {
 	private boolean client ; // arene du client ou du serveur ?
 	private Controle controle ;
 	private JTextArea txtChat ;
+	private ArrayList<Layer> layers;
 	
 	/**
 	 * Retourne le contenu complet de la zone de chat
@@ -136,7 +143,10 @@ public class Arene extends JFrame implements Global {
 		// les objets graphiques
 		setTitle("Arena");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, L_ARENE+3*MARGE, H_ARENE + H_CHAT);
+		setSize(800,700);
+		setLocationRelativeTo(null);  //C'est utilisée pour centrer la fenêtre par rapport à l'écran.
+		setResizable(false);
+		
 		contentPane = new JPanel();
 		if(client) {
 			contentPane.addKeyListener(new KeyAdapter() {
@@ -162,6 +172,29 @@ public class Arene extends JFrame implements Global {
 		contentPane.add(jpnMurs);
 		jpnMurs.setLayout(null);
 		
+		
+		//Parralax Background
+		//Parralax Background
+		layers = new ArrayList<>();
+
+		try {
+		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "0.png")), 0.5, L_ARENE, H_ARENE));
+		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "1.png")), 1, L_ARENE, H_ARENE));
+		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "2.png")), 1.5, L_ARENE, H_ARENE));
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+
+		// Création du panneau pour afficher les couches en parallaxe
+		ParallaxPanel parallaxPanel = new ParallaxPanel(layers);
+		parallaxPanel.setBounds(0, 0, L_ARENE, H_ARENE);
+		contentPane.add(parallaxPanel);
+
+		// Timer pour mettre à jour les couches
+		Timer timer = new Timer(20, e -> parallaxPanel.updateLayers());
+		timer.start();
+
+		
 		// zone de saisie que pour le client
 		if (client) {
 			txtSaisie = new JTextField();
@@ -184,23 +217,19 @@ public class Arene extends JFrame implements Global {
 		txtChat = new JTextArea();
 		jspChat.setViewportView(txtChat);
 		
-		JLabel lblFond = new JLabel("");
-		lblFond.setIcon(new ImageIcon(FONDARENE));
-		lblFond.setBounds(0, 0, L_ARENE, H_ARENE);
-		contentPane.add(lblFond);
-		
 		if(client) {
 			for( int i =0; i<=SON.length -1;i++) {
 				lesson[i] = new Son(CHEMINSONS+SON[i]);
 			}
 		}
-		//(new Son(SONAMBIANCE)).playContinue() ; 
+		(new Son(SONAMBIANCE)).playContinue() ; 
 		
 	}
 	
 	public void joueSon(int nbSon) {
 		lesson[nbSon].play();
 	}
+	
 
 	protected void contentPane_keyPressed(KeyEvent arg0) {
 		int valeur = -1;
