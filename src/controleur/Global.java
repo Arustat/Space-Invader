@@ -12,7 +12,7 @@ public interface Global {
 	// fichiers
 	public static final String
 		SEPARATOR = "//",
-		CHEMIN = "../media/",
+		CHEMIN = "media"+SEPARATOR,
 		CHEMINFONDS = CHEMIN + "fonds" + SEPARATOR,
 		CHEMINPERSOS = CHEMIN + "personnages" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
