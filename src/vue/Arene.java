@@ -178,9 +178,9 @@ public class Arene extends JFrame implements Global {
 		layers = new ArrayList<>();
 
 		try {
-		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "0.png")), 0.5, L_ARENE, H_ARENE));
-		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "1.png")), 1, L_ARENE, H_ARENE));
-		    layers.add(new Layer(ImageIO.read(new File(FONDCHOIX + "2.png")), 1.5, L_ARENE, H_ARENE));
+		    layers.add(new Layer(ImageIO.read(new File(FONDARENE + "0.png")), 0.5, L_ARENE, H_ARENE));
+		    layers.add(new Layer(ImageIO.read(new File(FONDARENE + "1.png")), 1, L_ARENE, H_ARENE));
+		    layers.add(new Layer(ImageIO.read(new File(FONDARENE + "2.png")), 1.5, L_ARENE, H_ARENE));
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
