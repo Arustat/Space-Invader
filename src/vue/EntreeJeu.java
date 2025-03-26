@@ -182,7 +182,7 @@ public class EntreeJeu extends JFrame implements Global{
 		});
 		contentPane.add(btnExit);
 		
-		JLabel copyrightLabel = new JLabel("Copyright © VIDEOGAMO, INC. 2012");
+		JLabel copyrightLabel = new JLabel("Copyright © GAMEYNOV, INC. 2012");
 		copyrightLabel.setForeground(Color.WHITE);
 		Font copyrightFont = retroFont.deriveFont(11f);
 		copyrightLabel.setFont(copyrightFont);  

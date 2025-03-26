@@ -1,22 +1,30 @@
 package vue;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import controleur.Controle;
 import controleur.Global;
 import outils.son.Son;
 
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.InputStream;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 /**
  * Frame du choix du joueur
@@ -33,6 +41,7 @@ public class ChoixJoueur extends JFrame implements Global {
 	private JPanel contentPane;
 	private JTextField txtPseudo;
 	private JLabel lblPersonnage;
+	 private JLabel lblPrecedent, lblSuivant, lblGo;
 	
 	//son 
 	private Son precedent;
@@ -40,12 +49,40 @@ public class ChoixJoueur extends JFrame implements Global {
 	private Son go;
 	private Son welcome;
 	
-
+	//Fonts
+	private Font retroFont;
+	
 	/**
 	 * Affichage du personnage
 	 */
 	private void affichePerso() {
-		lblPersonnage.setIcon(new ImageIcon(PERSO+numPerso+MARCHE+"1d1"+EXTIMAGE));
+		lblPersonnage.setIcon(new ImageIcon(PERSO+numPerso+"_1.png"));
+	}
+	
+
+	/**
+	 * Méthode privé qui charge la police personnalisée 
+	 */
+	private void loadRetroFont() {
+	    try {
+	        // Charge la police depuis les ressources
+	        InputStream is = getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf");
+	        
+	        if (is != null) {
+	            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+	            retroFont = font.deriveFont(20f);  // Taille de la police (20 points)
+	            
+	            // Enregistre la police dans le système graphique
+	            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	            ge.registerFont(retroFont);
+	        } else {
+	            System.err.println("Police non trouvée.");
+	            retroFont = new Font("Monospaced", Font.BOLD, 20);  // Police par défaut si erreur
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        retroFont = new Font("Monospaced", Font.BOLD, 20);  // Police par défaut si erreur
+	    }
 	}
 	
 	/**
@@ -76,7 +113,10 @@ public class ChoixJoueur extends JFrame implements Global {
 			txtPseudo.requestFocus();
 		}else{
 			suivant.play();
+			System.out.println("Pseudo: " + txtPseudo.getText());
+			System.out.println("Numéro de personnage: " + numPerso);
 			controle.evenementVue(this, PSEUDO+SEPARE+txtPseudo.getText()+SEPARE+numPerso);
+			
 		}
 	}
 	
@@ -99,97 +139,111 @@ public class ChoixJoueur extends JFrame implements Global {
 	 * @param controle 
 	 */
 	public ChoixJoueur(Controle controle) {
-		setTitle("Choice");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 416, 313);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		
-		JLabel lblPrecedent = new JLabel("");
-		lblPrecedent.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				lblPrecedent_clic();
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				souris_doigt();
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				souris_normale();
-			}
-		});
+		loadRetroFont();
 		
-		JLabel lblSuivant = new JLabel("");
-		lblSuivant.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				lblSuivant_clic();
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				souris_doigt();
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				souris_normale();
-			}
-		});
-		
-		JLabel lblGo = new JLabel("");
-		lblGo.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				lblGo_clic();
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				souris_doigt();
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				souris_normale();
-			}
-		});
-		
-		lblPersonnage = new JLabel("");
-		lblPersonnage.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPersonnage.setBounds(142, 112, 120, 120);
-		contentPane.add(lblPersonnage);
-		
-		txtPseudo = new JTextField();
-		txtPseudo.setBounds(142, 245, 120, 20);
-		contentPane.add(txtPseudo);
-		txtPseudo.setColumns(10);
-		
-		lblGo.setBounds(311, 202, 65, 61);
-		contentPane.add(lblGo);
-		lblSuivant.setBounds(301, 145, 25, 46);
-		contentPane.add(lblSuivant);
-		lblPrecedent.setBounds(65, 146, 31, 45);
-		contentPane.add(lblPrecedent);
-		
-		JLabel lblFond = new JLabel("");
-		lblFond.setBounds(0, 0, 400, 275);
-		lblFond.setIcon(new ImageIcon(FONDCHOIX));
-		contentPane.add(lblFond);
-		
-		// positionnement sur la zone de saisie
-		txtPseudo.requestFocus();
-		
-		// initialisations
-		this.controle = controle ;
-		numPerso = 1; // premier personnage par d�faut
-		affichePerso(); // affichage du premier personnage
-		precedent = new Son(SONPRECEDENT);
-		go = new Son(SONGO);
-		suivant = new Son(SONSUIVANT);
-		welcome = new Son(SONWELCOME);
-		
-		welcome.play();
-		
-	}
+		setTitle("Space Invader");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 700);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setLayout(null);
+        setContentPane(layeredPane);
+
+        Background backgroundPanel = new Background(BACKGROUND);
+        backgroundPanel.setBounds(0, 0, 800, 700);
+        layeredPane.add(backgroundPanel, Integer.valueOf(0));
+
+        contentPane = new JPanel();
+        contentPane.setLayout(null);
+        contentPane.setOpaque(false);
+        contentPane.setBounds(100, 300, 600, 300);
+        layeredPane.add(contentPane, Integer.valueOf(1));
+
+        lblPersonnage = new JLabel();
+        lblPersonnage.setHorizontalAlignment(SwingConstants.CENTER);
+        lblPersonnage.setBounds(210, 50, 180, 120);
+        lblPersonnage.setOpaque(true);  // Permet de rendre le fond visible
+        lblPersonnage.setBackground(new Color(11,10,31,255));  // Fond sombre, rappelant le fond des affiches d'arcade
+        lblPersonnage.setBorder(new LineBorder(new Color(255,231,34,255), 4));
+        contentPane.add(lblPersonnage);
+        
+        
+        Color textcolor = Color.WHITE;
+        
+        JLabel lblShip = new JLabel("SELECT A SHIP :");
+        lblShip.setForeground(textcolor);
+        lblShip.setFont(retroFont);
+        lblShip.setBounds(150, 0, 400, 25);
+        contentPane.add(lblShip);
+
+        lblPrecedent = new JLabel(new ImageIcon("assets/buttons/Previous_Idle.png"));
+        lblPrecedent.setBounds(100, 80, 65, 65);
+        lblPrecedent.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                lblPrecedent.setIcon(new ImageIcon("assets/buttons/Previous_Pushed.png"));
+            }
+            public void mouseReleased(MouseEvent e) {
+                lblPrecedent.setIcon(new ImageIcon("assets/buttons/Previous_Idle.png"));
+                lblPrecedent_clic();
+            }
+        });
+        contentPane.add(lblPrecedent);
+
+        lblSuivant = new JLabel(new ImageIcon("assets/buttons/Next_Idle.png"));
+        lblSuivant.setBounds(450, 80, 65, 65);
+        lblSuivant.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                lblSuivant.setIcon(new ImageIcon("assets/buttons/Next_Pushed.png"));
+            }
+            public void mouseReleased(MouseEvent e) {
+                lblSuivant.setIcon(new ImageIcon("assets/buttons/Next_Idle.png"));
+                lblSuivant_clic();
+            }
+        });
+        contentPane.add(lblSuivant);
+        
+        JLabel lbltext = new JLabel("Pseudo:");
+        lbltext.setForeground(textcolor);
+        Font textFont = retroFont.deriveFont(14f);
+        lbltext.setFont(textFont);
+        lbltext.setBounds(100, 200, 150, 30);
+        contentPane.add(lbltext);
+        
+        txtPseudo = new JTextField();
+        txtPseudo.setBounds(200, 200, 150, 30);
+        contentPane.add(txtPseudo);
+
+        lblGo = new JLabel(new ImageIcon("assets/buttons/Play_Idle.png"));
+        lblGo.setBounds(380, 190, 65, 65);
+        lblGo.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                lblGo.setIcon(new ImageIcon("assets/buttons/Play_Pushed.png"));
+            }
+            public void mouseReleased(MouseEvent e) {
+                lblGo.setIcon(new ImageIcon("assets/buttons/Play_Idle.png"));
+                lblGo_clic();
+            }
+        });
+        contentPane.add(lblGo);
+        
+        JLabel copyrightLabel = new JLabel("Copyright © GAMEYNOV, INC. 2012");
+		copyrightLabel.setForeground(Color.WHITE);
+		Font copyrightFont = retroFont.deriveFont(11f);
+		copyrightLabel.setFont(copyrightFont);  
+		copyrightLabel.setBounds(125, 279, 400, 30); 
+		contentPane.add(copyrightLabel);
+
+        this.controle = controle;
+        numPerso = 1;
+        affichePerso();
+        precedent = new Son(SONPRECEDENT);
+        go = new Son(SONGO);
+        suivant = new Son(SONSUIVANT);
+        welcome = new Son(SONWELCOME);
+
+        welcome.play();
+    }
 }

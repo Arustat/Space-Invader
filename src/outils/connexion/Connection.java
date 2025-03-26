@@ -53,6 +53,7 @@ public class Connection extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			System.out.println("erreur d'envoi sur le canal out : "+e);
+			 e.printStackTrace();
 		}
 	}
 	
@@ -68,6 +69,7 @@ public class Connection extends Thread {
 				((controleur.Controle)this.leRecepteur).receptionInfo(this, reception);
 			} catch (ClassNotFoundException e) {
 				System.out.println("erreur de classe sur r�ception : "+e);
+				e.printStackTrace();  // Affiche la pile d'appel
 				System.exit(0);
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, "l'ordinateur distant est d�connect�");
@@ -77,6 +79,7 @@ public class Connection extends Thread {
 					in.close();
 				} catch (IOException e1) {
 					System.out.println("la fermeture du canal d'entr�e a �chou� : "+e);
+					e.printStackTrace();  // Affiche la pile d'appel
 				}
 			}
 		}

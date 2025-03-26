@@ -15,8 +15,7 @@ public interface Global {
 		CHEMIN = "media" + SEPARATOR,
 		CHEMINS = "assets" + SEPARATOR,
 		CHEMINFOND = CHEMINS + "Background" + SEPARATOR,
-		CHEMINFONDS = CHEMIN + "fonds" + SEPARATOR,
-		CHEMINPERSOS = CHEMIN + "personnages" + SEPARATOR,
+		CHEMINPERSOS = CHEMINS + "Player" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
 		CHEMINBOULES = CHEMIN+"boules"+ SEPARATOR ,
 		PERSO = CHEMINPERSOS + "perso",
@@ -25,7 +24,6 @@ public interface Global {
 	// images
 	public static final String
 	BACKGROUND = CHEMINFOND + "start.png",
-	FONDCHOIX = CHEMINFONDS + "fondchoix.jpg",
 	FONDARENE = CHEMINFOND + "Layers/",
 	MUR = CHEMINMURS + "mur.gif",
 	BOULE = CHEMINBOULES +"boule.gif";
