@@ -16,10 +16,11 @@ public interface Global {
 		CHEMINS = "assets" + SEPARATOR,
 		CHEMINFOND = CHEMINS + "Background" + SEPARATOR,
 		CHEMINPERSOS = CHEMINS + "Player" + SEPARATOR,
+		CHEMINMORT = CHEMINS + "Explosion" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
 		CHEMINBOULES = CHEMIN+"boules"+ SEPARATOR ,
 		PERSO = CHEMINPERSOS + "perso",
-		EXTIMAGE = ".gif" ;
+		EXTIMAGE = ".png" ;
 
 	// images
 	public static final String
@@ -43,14 +44,9 @@ public interface Global {
 		H_BOULE = 17,
 		H_PERSO = 44,
 		L_PERSO = 39 ,
-		NBETATSMARCHE=4,
-		NBETATSBLESSE = 2,
-		NBETATSMORT =2;
+		NBETATS = 4,
+		NBETATSMORT = 3;
 		
-	public static final String
-		MARCHE = "marche",
-		BLESSE = "touche",
-		MORT = "mort" ;
 	
 	// messages serveurs
 	public static final String SEPARE = "~" ;

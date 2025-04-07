@@ -3,6 +3,8 @@ package modele;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -32,6 +34,8 @@ public class Joueur extends Objet implements Global {
 	private int orientation ; // tourné vers la gauche (0) ou vers la droite (1)
 	private int etape ; // numéro d'étape dans l'animation
 	private Boule boule ; // la boule du joueur
+	private Timer time_animation; //Temps d'animation d'un sprite
+	private Explosion explosion;
 	
 	/**
 	 * Constructeur
@@ -69,14 +73,29 @@ public class Joueur extends Objet implements Global {
 	 * @param etat
 	 * @param etape
 	 */
-	public void affiche(String etat, int etape) {
+	public void affiche(int etape) {
 		label.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
-		label.getjLabel().setIcon(new ImageIcon(PERSO+numPerso+etat+etape+"d"+orientation+EXTIMAGE));
+		label.getjLabel().setIcon(new ImageIcon(PERSO+numPerso+"_"+ etape+ EXTIMAGE));
 		message.getjLabel().setBounds(posX-10, posY+H_PERSO, L_PERSO+10, H_MESSAGE);
 		message.getjLabel().setText(pseudo+" : "+vie);
 		// envoi du personnage à tous les autres joueurs
 		jeuServeur.envoi(label);
 		jeuServeur.envoi(message);
+	}
+	
+	/**
+	 * Animation des sprites 
+	 */
+	public void animation() {
+		time_animation = new Timer();
+		time_animation.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	    		etape = (etape % NBETATS) + 1 ;
+	            // Redessine le sprite avec la nouvelle étape
+	            affiche(etape);
+	        }
+	    }, 0, 200);
 	}
 	
 	/**
@@ -102,10 +121,11 @@ public class Joueur extends Objet implements Global {
 		// calcul de la première position aléatoire
 		premierePosition(lesJoueurs, lesMurs) ;
 		// affichage du personnage
-		affiche(MARCHE, etape) ;
+		affiche(etape) ;
 		// création de la boule
 		boule = new Boule(jeuServeur) ;
 		jeuServeur.envoi(boule.getLabel());
+		animation();
 	}
 
 	/**
@@ -140,8 +160,6 @@ public class Joueur extends Objet implements Global {
 		if (toucheJoueur(lesJoueurs) || toucheMur(lesMurs)) {
 			position = ancpos ;
 		}
-		// passe à l'étape suivante de l'animation de la marche
-		etape = (etape % NBETATSMARCHE) + 1 ;
 		return position ;
 	}
 	
@@ -166,7 +184,7 @@ public class Joueur extends Objet implements Global {
 				break;
 		}
 		// affiche le personnage à sa nouvelle position
-		affiche(MARCHE, etape) ;
+		affiche(etape) ;
 	}
 	
 	/**
@@ -253,6 +271,24 @@ public class Joueur extends Objet implements Global {
 			jeuServeur.envoi(message);
 			jeuServeur.envoi(boule.getLabel());
 		}
+	}
+	
+	/**
+	 * Animation des sprites 
+	 */
+	public void animation_mort() {
+		//On va venir mettre au dessus de notre sprite l'animation de l'explosion
+		
+		
+		time_animation = new Timer();
+		time_animation.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	    		etape = (etape % NBETATS) + 1 ;
+	            // Redessine le sprite avec la nouvelle étape
+	            affiche(etape);
+	        }
+	    }, 0, 200);
 	}
 	
 }

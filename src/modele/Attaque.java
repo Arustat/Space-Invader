@@ -38,7 +38,7 @@ public class Attaque extends Thread implements Global {
 	 */
 	public void run() {
 		// l'attaquant est mis � la position 1 de la marche
-		attaquant.affiche(MARCHE, 1);
+		attaquant.affiche(1);
 		// r�cup�ration de la boule et orientation de l'attaquant
 		Boule laboule = attaquant.getBoule() ;
 		int orientation = attaquant.getOrientation() ;
@@ -62,20 +62,19 @@ public class Attaque extends Thread implements Global {
 			victime.perteVie();
 			jeuServeur.envoi(HURT);
 			attaquant.gainVie();
-			for(int i = 1; i<=NBETATSBLESSE;i++) {
+			/*for(int i = 1; i<=NBETATSBLESSE;i++) {
 				victime.affiche(BLESSE, i);
 				pause(80,0);
-			}
+			}*/
 			if(victime.estMort()) {
 				jeuServeur.envoi(DEATH);
 				for(int y =1; y<=NBETATSMORT;y++) {
-					victime.affiche(MORT, y);
-					pause(80,0);
+					victime.animation_mort();
 				}
 			}else {				
-				victime.affiche(MARCHE, 1);
+				victime.affiche(1);
 			}
-			attaquant.affiche(MARCHE, 1);
+			attaquant.affiche(1);
 		}
 		// la boule a fini son parcourt et redevient invisible
 		laboule.getLabel().getjLabel().setVisible(false);		
