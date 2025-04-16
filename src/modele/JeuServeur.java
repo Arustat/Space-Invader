@@ -1,5 +1,6 @@
 package modele;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -18,6 +19,7 @@ public class JeuServeur extends Jeu implements Global {
 	private ArrayList<Mur> lesMurs = new ArrayList<Mur>() ;
 	private Hashtable<Connection, Joueur> lesJoueurs = new Hashtable<Connection, Joueur>() ;
 	private ArrayList<Joueur> lesJoueursDansLordre = new ArrayList<Joueur>() ;
+	private static final int MAX_PLAYERS = 2;
 	
 	/**
 	 * Constructeur
@@ -35,7 +37,7 @@ public class JeuServeur extends Jeu implements Global {
 	public void constructionMurs() {
 		for (int k=0 ; k<NBMURS ; k++) {
 			lesMurs.add(new Mur()) ;
-			controle.evenementModele(this, "ajout mur", lesMurs.get(lesMurs.size()-1).getLabel().getjLabel());
+			this.controle.evenementModele(this, "ajout mur", lesMurs.get(lesMurs.size()-1).getLabel().getjLabel());
 		}
 	}
 	
@@ -44,7 +46,7 @@ public class JeuServeur extends Jeu implements Global {
 	 * @param label
 	 */
 	public void nouveauLabelJeu(Label label) {
-		controle.evenementModele(this, "ajout joueur", label.getjLabel());
+		this.controle.evenementModele(this, "ajout joueur", label.getjLabel());
 	}
 	
 	/**
@@ -58,8 +60,9 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void setConnection(Connection connection) {
-		lesJoueurs.put(connection, new Joueur(this)) ;
-	}
+        this.lesJoueurs.put(connection, new Joueur(this)) ;
+    }
+	
 
 	@Override
 	public void reception(Connection connection, Object info) {
@@ -97,9 +100,18 @@ public class JeuServeur extends Jeu implements Global {
 	
 	@Override
 	public void deconnection(Connection connection) {
-			lesJoueurs.get(connection).departJoueur();
-			lesJoueurs.remove(connection);
+		((Joueur)this.lesJoueurs.get(connection)).departJoueur();
+		this.lesJoueurs.remove(connection);
 		
+	}
+
+	public void envoiUn(Joueur joueur, Object info) {
+		for (Connection connection : lesJoueurs.keySet()) {
+			if (lesJoueurs.get(connection) == joueur) {
+				super.envoi(connection, info);
+				break;
+			}
+		}
 	}
 
 }

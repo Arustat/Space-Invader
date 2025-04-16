@@ -1,16 +1,15 @@
 package modele;
 
+import controleur.Global;
+import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
-import controleur.Global;
 import outils.connexion.Connection;
 
 /**
@@ -51,21 +50,28 @@ public class Joueur extends Objet implements Global {
 	 * @return the pseudo
 	 */
 	public String getPseudo() {
-		return pseudo;
+		return this.pseudo;
 	}
 
 	/**
 	 * @return the boule
 	 */
 	public Boule getBoule() {
-		return boule;
+		return this.boule;
 	}
 
 	/**
 	 * @return the orientation
 	 */
 	public int getOrientation() {
-		return orientation;
+		return this.orientation;
+	}
+
+	/**
+	 * @return the numPerso
+	 */
+	public int getNumPerso() {
+		return this.numPerso;
 	}
 
 	/**
@@ -107,24 +113,27 @@ public class Joueur extends Objet implements Global {
 		this.pseudo = pseudo ;
 		this.numPerso = numPerso ;
 		// création de l'affichage du personnage
-		label = new Label(Label.getNbLabel(), new JLabel()) ;
+		this.label = new Label(Label.getNbLabel(), new JLabel()) ;
 		Label.setNbLabel(Label.getNbLabel()+1);
-		label.getjLabel().setHorizontalAlignment(SwingConstants.CENTER);
-		label.getjLabel().setVerticalAlignment(SwingConstants.CENTER);
-		jeuServeur.nouveauLabelJeu(label);
+		this.label.getjLabel().setHorizontalAlignment(SwingConstants.CENTER);
+		this.label.getjLabel().setVerticalAlignment(SwingConstants.CENTER);
+		jeuServeur.nouveauLabelJeu(this.label);
 		// création de l'affichage du message sous le personnage
-		message = new Label(Label.getNbLabel(), new JLabel()) ;
+		this.message = new Label(Label.getNbLabel(), new JLabel()) ;
 		Label.setNbLabel(Label.getNbLabel()+1);
-		message.getjLabel().setHorizontalAlignment(SwingConstants.CENTER);
-		message.getjLabel().setFont(new Font("Dialog", Font.PLAIN, 8));
-		jeuServeur.nouveauLabelJeu(message);
+		this.message.getjLabel().setHorizontalAlignment(SwingConstants.CENTER);
+		this.message.getjLabel().setFont(new Font("Dialog", Font.PLAIN, 8));
+		this.message.getjLabel().setForeground(Color.WHITE); // Texte en blanc
+		this.message.getjLabel().setBackground(Color.BLACK); // Fond noir
+		this.message.getjLabel().setOpaque(true); // Très important pour afficher le fond
+		jeuServeur.nouveauLabelJeu(this.message);
 		// calcul de la première position aléatoire
 		premierePosition(lesJoueurs, lesMurs) ;
 		// affichage du personnage
 		affiche(etape) ;
 		// création de la boule
-		boule = new Boule(jeuServeur) ;
-		jeuServeur.envoi(boule.getLabel());
+		this.boule = new Boule(jeuServeur) ;
+		this.jeuServeur.envoi(this.boule.getLabel());
 		animation();
 	}
 
@@ -172,14 +181,14 @@ public class Joueur extends Objet implements Global {
 	public void action(int action, Hashtable<Connection, Joueur> lesJoueurs, ArrayList<Mur> lesMurs) {
 		// traite l'action
 		switch (action) {
-			case GAUCHE : posX = deplace(action, posX, GAUCHE,     -LEPAS, L_ARENE - L_PERSO, lesJoueurs, lesMurs) ;break ;
-			case DROITE : posX = deplace(action, posX, DROITE,      LEPAS, L_ARENE - L_PERSO, lesJoueurs, lesMurs) ;break ;
-			case HAUT :   posY = deplace(action, posY, orientation,-LEPAS, H_ARENE - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
-			case BAS :    posY = deplace(action, posY, orientation, LEPAS, H_ARENE - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
+			case GAUCHE : this.posX = deplace(action, posX, GAUCHE,     -LEPAS, L_ARENER - L_PERSO, lesJoueurs, lesMurs) ;break ;
+			case DROITE : this.posX = deplace(action, posX, DROITE,      LEPAS, L_ARENER - L_PERSO, lesJoueurs, lesMurs) ;break ;
+			case HAUT :   this.posY = deplace(action, posY, orientation,-LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
+			case BAS :    this.posY = deplace(action, posY, orientation, LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
 			case TIRE :
-					jeuServeur.envoi(FIGHT);
 				if(!boule.getLabel().getjLabel().isVisible()) {					
 					boule.tireBoule(this,lesMurs,lesJoueurs); 
+					
 				}
 				break;
 		}
@@ -232,8 +241,8 @@ public class Joueur extends Objet implements Global {
 	private void premierePosition(Hashtable<Connection, Joueur> lesJoueurs, ArrayList<Mur> lesMurs) {
 		label.getjLabel().setBounds(0, 0, L_PERSO, H_PERSO);
 		do {
-			posX = (int) Math.round(Math.random() * (L_ARENE - L_PERSO)) ;
-			posY = (int) Math.round(Math.random() * (H_ARENE - H_PERSO - H_MESSAGE)) ;
+			posX = (int) Math.round(Math.random() * (L_ARENER - L_PERSO)) ;
+			posY = (int) Math.round(Math.random() * (H_ARENER - H_PERSO - H_MESSAGE)) ;
 		}while(toucheJoueur(lesJoueurs)||toucheMur(lesMurs)) ;
 	}
 	
@@ -264,31 +273,28 @@ public class Joueur extends Objet implements Global {
 	 */
 	public void departJoueur() {
 		if (!(label==null)) {
+			// Initialiser l'explosion
+			explosion = new Explosion(posX, posY);
+			jeuServeur.nouveauLabelJeu(explosion.getLabel());
+			explosion.startAnimation();
+
+			// Rendre le joueur invisible après l'explosion
 			label.getjLabel().setVisible(false);
 			message.getjLabel().setVisible(false);
-			boule.getLabel().getjLabel().setVisible(false);		
-			jeuServeur.envoi(label);
-			jeuServeur.envoi(message);
-			jeuServeur.envoi(boule.getLabel());
+			boule.getLabel().getjLabel().setVisible(false);
+			
+			// Envoyer les mises à jour uniquement aux joueurs encore connectés
+			try {
+				jeuServeur.envoi(label);
+				jeuServeur.envoi(message);
+				jeuServeur.envoi(boule.getLabel());
+			} catch (Exception e) {
+				// Ignorer les erreurs de connexion lors de la déconnexion
+				System.out.println("Erreur lors de l'envoi des informations de déconnexion : " + e.getMessage());
+			}
 		}
 	}
 	
-	/**
-	 * Animation des sprites 
-	 */
-	public void animation_mort() {
-		//On va venir mettre au dessus de notre sprite l'animation de l'explosion
-		
-		
-		time_animation = new Timer();
-		time_animation.scheduleAtFixedRate(new TimerTask() {
-	        @Override
-	        public void run() {
-	    		etape = (etape % NBETATS) + 1 ;
-	            // Redessine le sprite avec la nouvelle étape
-	            affiche(etape);
-	        }
-	    }, 0, 200);
-	}
+	
 	
 }

@@ -1,32 +1,26 @@
 package vue;
 
-import java.awt.Graphics;
+import controleur.Controle;
+import controleur.Global;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import controleur.Controle;
-import controleur.Global;
-import outils.son.Son;
-
 import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import outils.son.Son;
 
 /**
- * Frame de l'ar�ne du jeu
+ * Frame de l'arne du jeu
  * @author emds
  *
  */
@@ -41,6 +35,7 @@ public class Arene extends JFrame implements Global {
 	private Controle controle ;
 	private JTextArea txtChat ;
 	private ArrayList<Layer> layers;
+	private JLabel lblGameOver;
 	
 	/**
 	 * Retourne le contenu complet de la zone de chat
@@ -51,7 +46,7 @@ public class Arene extends JFrame implements Global {
 	}
 	
 	/**
-	 * Remplace le contenu de txtChat par le contenu du param�tre
+	 * Remplace le contenu de txtChat par le contenu du paramètre
 	 * @param contenuTxtChat
 	 */
 	public void remplaceChat(String contenuTxtChat) {
@@ -68,7 +63,7 @@ public class Arene extends JFrame implements Global {
 	}
 	
 	/**
-	 * Ajout d'un nouveau personnage (c�t� serveur)
+	 * Ajout d'un nouveau personnage (côté serveur)
 	 * @param unJoueur
 	 */
 	public void ajoutJoueur(JLabel unJoueur) {
@@ -77,18 +72,20 @@ public class Arene extends JFrame implements Global {
 	}
 	
 	/**
-	 * Ajout ou modification d'un personnage (c�t� client)
+	 * Ajout ou modification d'un personnage (côté client)
 	 * @param num
 	 * @param unLabel
 	 */
 	public void ajoutModifJoueur(int num, JLabel unLabel) {
-		// tentative de suppression
-		try {
-			jpnJeu.remove(num);
-		} catch (ArrayIndexOutOfBoundsException  e) {
-		}
-		jpnJeu.add(unLabel, num);
-		jpnJeu.repaint();	
+		SwingUtilities.invokeLater(() -> {
+			if (num < jpnJeu.getComponentCount()) {
+				jpnJeu.remove(num);
+			}
+			jpnJeu.add(unLabel, num);
+			System.out.println("Ajout/modif joueur " + num);
+			jpnJeu.revalidate(); // force la mise à jour du layout
+			jpnJeu.repaint();    // redessine
+		});
 	}
 	
 	
@@ -111,7 +108,7 @@ public class Arene extends JFrame implements Global {
 	}
 	
 	/**
-	 * Traite la touche utilis�e
+	 * Traite la touche utilisée
 	 * @param arg0
 	 */
 	private void txtSaisie_keyPressed(KeyEvent arg0) {
@@ -131,13 +128,22 @@ public class Arene extends JFrame implements Global {
 		return jpnMurs ;
 	}
 
+	public void gererExplosion(JLabel explosionLabel) {
+		SwingUtilities.invokeLater(() -> {
+			jpnJeu.add(explosionLabel);
+			jpnJeu.setComponentZOrder(explosionLabel, 0); // Mettre l'explosion au premier plan
+			jpnJeu.revalidate();
+			jpnJeu.repaint();
+		});
+	}
+
 	/**
 	 * Create the frame.
 	 */
 	public Arene(String typeJeu, Controle controle) {
 		// arene pour un client ou un serveur ?
 		client = (typeJeu.equals("client"));
-		// r�cup�ration du controleur
+		// récupération du controleur
 		this.controle = controle;
 		
 		// les objets graphiques
@@ -146,6 +152,7 @@ public class Arene extends JFrame implements Global {
 		setSize(800,700);
 		setLocationRelativeTo(null);  //C'est utilisée pour centrer la fenêtre par rapport à l'écran.
 		setResizable(false);
+		
 		
 		contentPane = new JPanel();
 		if(client) {
@@ -172,6 +179,13 @@ public class Arene extends JFrame implements Global {
 		contentPane.add(jpnMurs);
 		jpnMurs.setLayout(null);
 		
+
+        lblGameOver = new JLabel("GAME OVER");
+		lblGameOver.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 48));
+		lblGameOver.setForeground(java.awt.Color.RED);
+		lblGameOver.setBounds(L_ARENE/2 - 150, H_ARENE/2 - 50, 300, 100);
+		lblGameOver.setVisible(false);
+		contentPane.add(lblGameOver);
 		
 		//Parralax Background
 		//Parralax Background
@@ -231,7 +245,7 @@ public class Arene extends JFrame implements Global {
 	}
 	
 
-	protected void contentPane_keyPressed(KeyEvent arg0) {
+	private void contentPane_keyPressed(KeyEvent arg0) {
 		int valeur = -1;
 		
 		switch(arg0.getKeyCode()) {
@@ -257,5 +271,13 @@ public class Arene extends JFrame implements Global {
 			controle.evenementVue(this, ACTION+SEPARE+valeur);
 		}
 		
+	}
+
+	public void afficherGameOver() {
+		SwingUtilities.invokeLater(() -> {
+			lblGameOver.setVisible(true);
+			contentPane.revalidate();
+			contentPane.repaint();
+		});
 	}
 }

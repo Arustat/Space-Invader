@@ -39,13 +39,13 @@ public interface Global {
 		TIRE = 4,
 		ACTION = 2,
 		LEPAS = 10,
-		NBPERSOS = 3,
+		NBPERSOS = 4,
 		L_BOULE = 17,
 		H_BOULE = 17,
 		H_PERSO = 44,
 		L_PERSO = 39 ,
 		NBETATS = 4,
-		NBETATSMORT = 3;
+		NBETATSMORT = 4;
 		
 	
 	// messages serveurs
@@ -58,6 +58,8 @@ public interface Global {
 	public static final int
 		H_ARENE = 700,
 		L_ARENE = 800,
+		L_ARENER = 800,
+		H_ARENER = 700,
 		H_CHAT = 0,
 		H_MESSAGE = 8,
 		H_SAISIE = 25,

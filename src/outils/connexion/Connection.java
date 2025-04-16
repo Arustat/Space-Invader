@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
 import javax.swing.JOptionPane;
 
 /**
@@ -18,6 +17,7 @@ public class Connection extends Thread {
 	private Object leRecepteur ;
 	private ObjectInputStream in ;
 	private ObjectOutputStream out ;
+	private Socket socket; 
 
 	/**
 	 * Constructeur
@@ -25,6 +25,7 @@ public class Connection extends Thread {
 	 * @param leRecepteur
 	 */
 	public Connection(Socket socket, Object leRecepteur) {
+		this.socket = socket;
 		this.leRecepteur = leRecepteur ;
 		// cr�ation du canal de sortie pour envoyer des informations
 		try {
@@ -87,5 +88,12 @@ public class Connection extends Thread {
 		}
 		
 	}
+	/**
+     * Retourne le socket associé à cette connexion
+     * @return le socket
+     */
+    public Socket getSocket() {
+        return this.socket;
+    }
 	
 }

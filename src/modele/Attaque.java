@@ -68,8 +68,14 @@ public class Attaque extends Thread implements Global {
 			}*/
 			if(victime.estMort()) {
 				jeuServeur.envoi(DEATH);
+				// Créer une explosion à la position du joueur mort
+				Explosion explosion = new Explosion(victime.getPosX(), victime.getPosY());
+				jeuServeur.nouveauLabelJeu(explosion.getLabel());
+				explosion.startAnimation();
+				// Envoyer un message game over au joueur mort
+				jeuServeur.envoiUn(victime, "GAME_OVER");
 				for(int y =1; y<=NBETATSMORT;y++) {
-					victime.animation_mort();
+					victime.departJoueur();
 				}
 			}else {				
 				victime.affiche(1);

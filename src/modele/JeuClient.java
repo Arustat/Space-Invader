@@ -1,8 +1,8 @@
 package modele;
 
-import javax.swing.JPanel;
-
 import controleur.Controle;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import outils.connexion.Connection;
 
 /**
@@ -30,19 +30,26 @@ public class JeuClient extends Jeu {
 
 	@Override
 	public void reception(Connection connection, Object info) {
-		// arriv�e du panel des murs
-		if(info instanceof JPanel) {
-			controle.evenementModele(this, "ajout panel murs", info);
-		// arriv�e d'un label correspondant � un personnage
-		}else if(info instanceof Label) {
-			controle.evenementModele(this, "ajout joueur", info);
-		// arriv�e du contenu du chat	
-		}else if(info instanceof String) {
-			controle.evenementModele(this, "remplace chat", info);
-		}else if(info instanceof Integer) {
-			controle.evenementModele(this, "son", info);
+		if (info instanceof String) {
+			String message = (String) info;
+			if (message.equals("Server is full. Cannot accept new players.")) {
+				JOptionPane.showMessageDialog(null, "Le serveur est plein. Impossible de se connecter.", "Serveur Plein", JOptionPane.WARNING_MESSAGE);
+				System.exit(0);
+			} else if ("GAME_OVER".equals(message)) {
+				this.controle.evenementModele(this, "game over", null);
+			} else {
+				this.controle.evenementModele(this, "remplace chat", message);
+			}
 		}
-		
+		else if (info instanceof JPanel) {
+			this.controle.evenementModele(this, "ajout panel murs", info);
+		}
+		else if (info instanceof Label) {
+			this.controle.evenementModele(this, "ajout joueur", info);
+		}
+		else if (info instanceof Integer) {
+			this.controle.evenementModele(this, "son", info);
+		}
 	}
 
 	@Override
@@ -55,7 +62,7 @@ public class JeuClient extends Jeu {
 	 * @param info
 	 */
 	public void envoi(Object info) {
-		super.envoi(connection, info) ;
+		super.envoi(this.connection, info) ;
 	}
 
 }

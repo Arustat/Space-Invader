@@ -1,37 +1,44 @@
 package modele;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import controleur.Global;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
-public class Explosion {
-	//propriété privée de la classe
-	
-	private BufferedImage[] frames;
-	private int currentFrame = 0;
-	private int x,y;
-	private boolean finish = false;
-	
-	
-	public Explosion(BufferedImage[] frames, int x, int y) {
-        this.frames = frames;
-        this.x = x;
-        this.y = y;
+public class Explosion implements Global {
+    private Label explosionLabel;
+    private int etape;
+    private Timer timer;
+    private JeuServeur jeuServeur;
+
+    public Explosion(int posX, int posY) {
+        explosionLabel = new Label(Label.getNbLabel(), new JLabel());
+        explosionLabel.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
+        etape = 0;
+        explosionLabel.getjLabel().setVisible(true);
     }
 
-    public void update() {
-        currentFrame++;
-        if (currentFrame >= frames.length) {
-            finish = true;
-        }
+    public void startAnimation() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (etape < NBETATSMORT) {
+                    etape++;
+                    String imagePath = CHEMINMORT + etape + EXTIMAGE;
+                    ImageIcon icon = new ImageIcon(imagePath);
+                    icon.setDescription("Explosion"); // Marquer l'icône comme explosion
+                    explosionLabel.getjLabel().setIcon(icon);
+                } else {
+                    timer.cancel();
+                    explosionLabel.getjLabel().setVisible(false);
+                }
+            }
+        }, 0, 100);
     }
 
-    public void draw(Graphics g) {
-        if (!finish) {
-            g.drawImage(frames[currentFrame], x, y, null);
-        }
-    }
-
-    public boolean isFinished() {
-        return finish;
+    public Label getLabel() {
+        return explosionLabel;
     }
 }
