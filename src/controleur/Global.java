@@ -42,8 +42,8 @@ public interface Global {
 		NBPERSOS = 4,
 		L_BOULE = 17,
 		H_BOULE = 17,
-		H_PERSO = 44,
-		L_PERSO = 39 ,
+		H_PERSO = 33,
+		L_PERSO = 33,
 		NBETATS = 4,
 		NBETATSMORT = 4;
 		

@@ -37,55 +37,53 @@ public class Attaque extends Thread implements Global {
 	 * m�thode dans le thread, pour faire bouger la boule
 	 */
 	public void run() {
-		// l'attaquant est mis � la position 1 de la marche
+		// l'attaquant est mis à la position 1 de la marche
 		attaquant.affiche(1);
-		// r�cup�ration de la boule et orientation de l'attaquant
-		Boule laboule = attaquant.getBoule() ;
-		int orientation = attaquant.getOrientation() ;
+		// récupération de la boule
+		Boule laboule = attaquant.getBoule();
 		laboule.getLabel().getjLabel().setVisible(true);
-		// gestion de l'�ventuel joueur touch� par la boule
-		Joueur victime = null ;
-		// boucle sur la trajectoire de la boule
+		
+		// gestion de l'éventuel joueur touché par la boule
+		Joueur victime = null;
+	
+		// Initialisation de la vitesse verticale de la boule
+		int vitesseVerticale = -LEPAS; // La boule monte (vers le haut)
+	
+		// boucle sur la trajectoire de la boule (boule se déplace verticalement)
 		do {
-			if (orientation==GAUCHE) {
-				laboule.setPosX(laboule.getPosX()-LEPAS) ;
-			}else{
-				laboule.setPosX(laboule.getPosX()+LEPAS) ;				
-			}
+			laboule.setPosY(laboule.getPosY() + vitesseVerticale); // Déplacement vers le haut
+	
 			laboule.getLabel().getjLabel().setBounds(laboule.getPosX(), laboule.getPosY(), L_BOULE, H_BOULE);
 			pause(5, 0);
 			jeuServeur.envoi(laboule.getLabel());
-			victime = toucheJoueur() ;
-		}while(laboule.getPosX()>=0 && laboule.getPosX()<=L_ARENE && toucheMur()== false && victime == null) ;
-		
-		if(victime != null && !victime.estMort()) {
+	
+			// Vérifier si la boule touche un joueur
+			victime = toucheJoueur();
+		} while (laboule.getPosY() >= 0 && laboule.getPosY() <= H_ARENE && !toucheMur() && victime == null);
+	
+		if (victime != null && !victime.estMort()) {
 			victime.perteVie();
 			jeuServeur.envoi(HURT);
 			attaquant.gainVie();
-			/*for(int i = 1; i<=NBETATSBLESSE;i++) {
-				victime.affiche(BLESSE, i);
-				pause(80,0);
-			}*/
-			if(victime.estMort()) {
+			if (victime.estMort()) {
 				jeuServeur.envoi(DEATH);
-				// Créer une explosion à la position du joueur mort
 				Explosion explosion = new Explosion(victime.getPosX(), victime.getPosY());
 				jeuServeur.nouveauLabelJeu(explosion.getLabel());
 				explosion.startAnimation();
-				// Envoyer un message game over au joueur mort
 				jeuServeur.envoiUn(victime, "GAME_OVER");
-				for(int y =1; y<=NBETATSMORT;y++) {
+				for (int y = 1; y <= NBETATSMORT; y++) {
 					victime.departJoueur();
 				}
-			}else {				
+			} else {
 				victime.affiche(1);
 			}
 			attaquant.affiche(1);
 		}
-		// la boule a fini son parcourt et redevient invisible
-		laboule.getLabel().getjLabel().setVisible(false);		
+		// la boule a fini son parcours et redevient invisible
+		laboule.getLabel().getjLabel().setVisible(false);
 		jeuServeur.envoi(laboule.getLabel());
 	}
+	
 	
 	/**
 	 * Gestion d'une pause (qui servira � r�guler le mouvement de la boule)
