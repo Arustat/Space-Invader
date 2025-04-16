@@ -22,7 +22,7 @@ import vue.EntreeJeu;
  */
 public class Controle implements Global {
 	
-	// propri�t�s
+	// propriétés
 	private EntreeJeu frmEntreeJeu ;
 	private Jeu leJeu ;
 	private Arene frmArene ;
@@ -30,7 +30,7 @@ public class Controle implements Global {
 	private Connection connection ;
 
 	/**
-	 * M�thode de d�marrage
+	 * Méthode de démarrage
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -46,7 +46,7 @@ public class Controle implements Global {
 	}
 	
 	/**
-	 * R�cu�pration de la connexion
+	 * Récuépration de la connexion
 	 * @param connection
 	 */
 	public void setConnection(Connection connection) {
@@ -70,11 +70,11 @@ public class Controle implements Global {
 	}
 	
 	/* **********************************************************************************************
-	 * Ev�nements provenant de la vue
+	 * Evénements provenant de la vue
 	 * **********************************************************************************************/
 	
 	/**
-	 * G�re les �v�nements provenant de la vue
+	 * Gére les événements provenant de la vue
 	 * @param uneFrame
 	 * @param info
 	 */
@@ -90,7 +90,7 @@ public class Controle implements Global {
 	}
 
 	/**
-	 * G�re les �v�nements provenant de la frame EntreeJeu
+	 * Gére les événements provenant de la frame EntreeJeu
 	 * @param info
 	 */
 	private void evenementEntreeJeu(Object info) {
@@ -115,7 +115,7 @@ public class Controle implements Global {
 	}
 
 	/**
-	 * G�re les �v�nements provenant de la frame ChoixJoueur
+	 * Gére les événements provenant de la frame ChoixJoueur
 	 * @param info
 	 */
 	private void evenementChoixJoueur(Object info) {
@@ -128,7 +128,7 @@ public class Controle implements Global {
 	}
 
 	/**
-	 * G�re les �v�nements provenant de la frame Arene
+	 * Gére les événements provenant de la frame Arene
 	 * @param info
 	 */
 	private void evenementArene(Object info) {
@@ -137,11 +137,11 @@ public class Controle implements Global {
 	
 	
 	/* **********************************************************************************************
-	 * Ev�nements provenant du mod�le
+	 * Evénements provenant du modèle
 	 * **********************************************************************************************/
 
 	/**
-	 * G�re les �v�n�ments provenant du mod�le (de jeuClient ou jeuServeur)
+	 * Gére les événéments provenant du modèle (de jeuClient ou jeuServeur)
 	 * @param unJeu
 	 * @param ordre
 	 * @param info
@@ -156,25 +156,27 @@ public class Controle implements Global {
 	}
 	
 	/**
-	 * G�re les �v�nements provenant du jeu serveur
+	 * Gére les événements provenant du jeu serveur
 	 * @param ordre
 	 * @param info
 	 */
 	private void evenementJeuServeur(String ordre, Object info) {
 		if(ordre.equals("ajout mur")) {
 			frmArene.ajoutMur((JLabel)info);
-		}else if(ordre.equals("envoi panel murs")) {
+		} else if(ordre.equals("envoi panel murs")) {
 			((JeuServeur)leJeu).envoi((Connection)info, frmArene.getJpnMurs());
-		}else if(ordre.equals("ajout joueur")) {
+		} else if(ordre.equals("ajout joueur")) {
 			frmArene.ajoutJoueur((JLabel)info);
-		}else if(ordre.equals("ajout phrase")) {
+		} else if(ordre.equals("ajout phrase")) {
 			frmArene.ajoutChat((String)info);
 			((JeuServeur)leJeu).envoi(frmArene.getContenuTxtChat());
+		} else if(ordre.equals("ajout enemy")) {
+			frmArene.ajoutEnemy((JLabel)info);
 		}
 	}
 	
 	/**
-	 * G�re les �v�nements provenant du jeu client
+	 * Gére les événements provenant du jeu client
 	 * @param ordre
 	 * @param info
 	 */
