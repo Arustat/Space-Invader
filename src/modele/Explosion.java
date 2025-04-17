@@ -14,7 +14,7 @@ public class Explosion implements Global {
 
     public Explosion(int posX, int posY) {
         explosionLabel = new Label(Label.getNbLabel(), new JLabel());
-        explosionLabel.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
+        explosionLabel.getjLabel().setBounds(posX, posY, 64, 64);
         etape = 0;
         explosionLabel.getjLabel().setVisible(true);
     }
