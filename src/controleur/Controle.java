@@ -171,6 +171,8 @@ public class Controle implements Global {
 		}else if(ordre.equals("ajout phrase")) {
 			this.frmArene.ajoutChat((String)info);
 			((JeuServeur)leJeu).envoi(frmArene.getContenuTxtChat());
+		} else if(ordre.equals("ajout enemy")) {
+			frmArene.ajoutEnemy((JLabel)info);
 		}
 	}
 	

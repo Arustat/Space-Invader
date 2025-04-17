@@ -31,6 +31,7 @@ public class Arene extends JFrame implements Global {
 	private JPanel jpnMurs ;
 	private Son[] lesson = new Son[SON.length];
 	private JPanel jpnJeu ;
+	private JPanel jpnEnemy;
 	private boolean client ; // arene du client ou du serveur ?
 	private Controle controle ;
 	private JTextArea txtChat ;
@@ -61,6 +62,12 @@ public class Arene extends JFrame implements Global {
 		jpnMurs.add(unMur);
 		jpnMurs.repaint();
 	}
+	
+	public void ajoutEnemy(JLabel unEnemy) {
+		jpnEnemy.add(unEnemy);
+		jpnEnemy.repaint();
+	}
+	
 	
 	/**
 	 * Ajout d'un nouveau personnage (côté serveur)
@@ -96,6 +103,16 @@ public class Arene extends JFrame implements Global {
 	public void ajoutPanelMurs(JPanel lesMurs) {
 		jpnMurs.add(lesMurs);
 		jpnMurs.repaint();
+		contentPane.requestFocus();
+	}
+	
+	/**
+	 * Ajout de tous les enemies en une fois
+	 * @param lesEnemies
+	 */
+	public void ajoutPanelEnemy(JPanel lesEnemies) {
+		jpnEnemy.add(lesEnemies);
+		jpnEnemy.repaint();
 		contentPane.requestFocus();
 	}
 	
@@ -186,8 +203,12 @@ public class Arene extends JFrame implements Global {
 		lblGameOver.setBounds(L_ARENE/2 - 150, H_ARENE/2 - 50, 300, 100);
 		lblGameOver.setVisible(false);
 		contentPane.add(lblGameOver);
+		jpnEnemy = new JPanel();
+		jpnEnemy.setBounds(0, 0, L_ARENE, H_ARENE);
+		jpnEnemy.setOpaque(false);
+		contentPane.add(jpnEnemy);
+		jpnEnemy.setLayout(null);
 		
-		//Parralax Background
 		//Parralax Background
 		layers = new ArrayList<>();
 
