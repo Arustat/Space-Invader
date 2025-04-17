@@ -16,6 +16,7 @@ public interface Global {
 		CHEMINS = "assets" + SEPARATOR,
 		CHEMINFOND = CHEMINS + "Background" + SEPARATOR,
 		CHEMINPERSOS = CHEMINS + "Player" + SEPARATOR,
+		CHEMINENEMY = CHEMINS + "Enemy" + SEPARATOR,
 		CHEMINMORT = CHEMINS + "Explosion" + SEPARATOR,
 		CHEMINMURS = CHEMIN + "murs" + SEPARATOR,
 		CHEMINBOULES = CHEMIN+"boules"+ SEPARATOR ,
