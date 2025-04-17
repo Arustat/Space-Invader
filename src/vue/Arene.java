@@ -65,8 +65,29 @@ public class Arene extends JFrame implements Global {
 	}
 	
 	public void ajoutEnemy(JLabel unEnemy) {
-		jpnEnemy.add(unEnemy);
-		jpnEnemy.repaint();
+		SwingUtilities.invokeLater(() -> {
+			// Vérifier si l'ennemi est déjà dans le panel
+			boolean found = false;
+			for (int i = 0; i < jpnEnemy.getComponentCount(); i++) {
+				if (jpnEnemy.getComponent(i) == unEnemy) {
+					found = true;
+					break;
+				}
+			}
+			
+			// Si l'ennemi n'est pas déjà dans le panel, l'ajouter
+			if (!found) {
+				jpnEnemy.add(unEnemy);
+			}
+			
+			// S'assurer que les dimensions et la position sont correctes
+			// Pour éviter les problèmes avec setBounds qui peut écraser les dimensions,
+			// nous séparons ces appels
+			unEnemy.setSize(L_PERSO, H_PERSO);
+			unEnemy.setLocation(unEnemy.getX(), unEnemy.getY());
+			
+			jpnEnemy.repaint();
+		});
 	}
 	
 	

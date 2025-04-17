@@ -2,6 +2,7 @@ package modele;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,8 @@ public class JeuServeur extends Jeu implements Global {
 	private static final int MAX_PLAYERS = 2;
 	private WaveManager waveManager;
 	private Timer waveTimer;
+	private int nextEnemyId = 0; // Compteur pour assigner des ID uniques aux ennemis
+	private HashMap<Integer, Enemy> enemiesById = new HashMap<>(); // Map des ennemis par ID
 	
 	/**
 	 * Constructeur
@@ -44,11 +47,46 @@ public class JeuServeur extends Jeu implements Global {
 			public void actionPerformed(ActionEvent e) {
 				waveManager.update();
 				
-				// Envoi des ennemis aux clients
+				// Envoi des ennemis aux clients et affichage sur le serveur
 				for (Enemy enemy : waveManager.getCurrentWave()) {
 					if (enemy.isAlive()) {
+						// Affichage sur le serveur
 						controle.evenementModele(JeuServeur.this, "ajout enemy", enemy.getLabel().getjLabel());
+						
+						// Vérifier si cet ennemi a déjà un ID
+						int enemyId = -1;
+						for (int id : enemiesById.keySet()) {
+							if (enemiesById.get(id) == enemy) {
+								enemyId = id;
+								break;
+							}
+						}
+						
+						// Si pas d'ID, en assigner un nouveau
+						if (enemyId == -1) {
+							enemyId = nextEnemyId++;
+							enemiesById.put(enemyId, enemy);
+						}
+						
+						// Créer un EnemyData pour l'envoi au client
+						EnemyData enemyData = new EnemyData(enemy, enemyId);
+						
+						// Envoi aux clients
+						for (Connection connection : lesJoueurs.keySet()) {
+							envoi(connection, enemyData);
+						}
 					}
+				}
+				
+				// Nettoyage des ennemis morts de la map
+				ArrayList<Integer> idsToRemove = new ArrayList<>();
+				for (int id : enemiesById.keySet()) {
+					if (!enemiesById.get(id).isAlive() || !waveManager.getCurrentWave().contains(enemiesById.get(id))) {
+						idsToRemove.add(id);
+					}
+				}
+				for (int id : idsToRemove) {
+					enemiesById.remove(id);
 				}
 				
 				// Si la vague est terminée, on commence une nouvelle vague
@@ -90,7 +128,7 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void setConnection(Connection connection) {
-        if (!isFull(false)) {
+        if (lesJoueurs.size() < MAX_PLAYERS) {
 			this.lesJoueurs.put(connection, new Joueur(this));
 		} else {
 			// Informer le client que le serveur est plein

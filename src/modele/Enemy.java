@@ -1,12 +1,11 @@
 package modele;
 
+import controleur.Global;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import controleur.Global;
 
 public class Enemy extends Objet implements Global {
     private int health;
@@ -63,7 +62,13 @@ public class Enemy extends Objet implements Global {
 
     private void updateSprite() {
         if (label != null && label.getjLabel() != null) {
-            label.getjLabel().setIcon(new ImageIcon(CHEMINENEMY + "Enemy" + type + "/" + currentFrame + EXTIMAGE));
+            ImageIcon icon = new ImageIcon(CHEMINENEMY + "Enemy" + type + "/" + currentFrame + EXTIMAGE);
+            // Définir explicitement la description pour faciliter l'identification côté client
+            icon.setDescription("Enemy" + type + "/" + currentFrame);
+            label.getjLabel().setIcon(icon);
+            // S'assurer que la taille et la position sont toujours fixées
+            label.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
+            label.getjLabel().setSize(L_PERSO, H_PERSO);
             label.getjLabel().setVisible(true);
         }
     }
@@ -74,9 +79,7 @@ public class Enemy extends Objet implements Global {
         
         // Met à jour la position du label
         if (label != null && label.getjLabel() != null) {
-            label.getjLabel().setBounds(posX, posY, 
-                label.getjLabel().getWidth(), 
-                label.getjLabel().getHeight());
+            label.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
         }
     }
 

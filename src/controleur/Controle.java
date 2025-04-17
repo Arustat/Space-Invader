@@ -197,6 +197,8 @@ public class Controle implements Global {
 			this.frmArene.remplaceChat((String)info);
 		}else if (ordre.equals("son")) {
 			this.frmArene.joueSon((Integer)info);
+		}else if (ordre.equals("ajout enemy")) {
+			this.frmArene.ajoutEnemy((JLabel)info);
 		}
 	}
 
