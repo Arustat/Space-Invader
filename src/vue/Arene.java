@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import modele.HealthBar;
 import outils.son.Son;
 
 /**
@@ -85,13 +86,35 @@ public class Arene extends JFrame implements Global {
 	 */
 	public void ajoutModifJoueur(int num, JLabel unLabel) {
 		SwingUtilities.invokeLater(() -> {
-			if (num < jpnJeu.getComponentCount()) {
-				jpnJeu.remove(num);
+			if (unLabel instanceof HealthBar) {
+				// Chercher si une barre de vie existe déjà pour ce numéro
+				boolean found = false;
+				for (int i = 0; i < jpnJeu.getComponentCount(); i++) {
+					if (jpnJeu.getComponent(i) instanceof HealthBar) {
+						if (i == num) {
+							jpnJeu.remove(i);
+							jpnJeu.add(unLabel, i);
+							found = true;
+							break;
+						}
+					}
+				}
+				// Si aucune barre de vie n'existe pour ce numéro, l'ajouter
+				if (!found) {
+					jpnJeu.add(unLabel, num);
+				}
+			} else {
+				if (num >= 0 && num <= jpnJeu.getComponentCount()) {
+					if (num < jpnJeu.getComponentCount()) {
+						jpnJeu.remove(num);
+					}
+					jpnJeu.add(unLabel, num);
+				} else {
+					jpnJeu.add(unLabel);
+				}
 			}
-			jpnJeu.add(unLabel, num);
-			System.out.println("Ajout/modif joueur " + num);
-			jpnJeu.revalidate(); // force la mise à jour du layout
-			jpnJeu.repaint();    // redessine
+			jpnJeu.revalidate();
+			jpnJeu.repaint();
 		});
 	}
 	

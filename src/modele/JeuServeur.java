@@ -90,14 +90,30 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void setConnection(Connection connection) {
-        this.lesJoueurs.put(connection, new Joueur(this)) ;
+        if (!isFull(false)) {
+			this.lesJoueurs.put(connection, new Joueur(this));
+		} else {
+			// Informer le client que le serveur est plein
+			super.envoi(connection, "Server is full. Cannot accept new players.");
+			try {
+				connection.getSocket().close();
+			} catch (IOException e) {
+				System.out.println("Erreur lors de la fermeture de la connexion : " + e);
+			}
+		}
     }
 	
 
 	@Override
 	public void reception(Connection connection, Object info) {
-		String[] infos = ((String)info).split(SEPARE) ;
-		String laPhrase ;
+		// Vérifiez si le joueur existe dans la collection
+		if (!lesJoueurs.containsKey(connection)) {
+			System.out.println("Connexion non reconnue ou joueur non initialisé");
+			return;
+		}
+		
+		String[] infos = ((String)info).split(SEPARE);
+		String laPhrase;
 		switch(Integer.parseInt(infos[0])) {
 			// un nouveau joueur vient d'arriver
 			case PSEUDO : 
@@ -142,6 +158,23 @@ public class JeuServeur extends Jeu implements Global {
 				break;
 			}
 		}
+	}
+
+	public boolean isFull() {
+		return lesJoueurs.size() >= MAX_PLAYERS;
+	}
+	
+	/**
+	 * Vérifie si le serveur est plein, en tenant compte d'un joueur supplémentaire potentiel
+	 * @param countNewPlayer Si true, considère qu'un nouveau joueur est en train d'essayer de se connecter
+	 * @return true si le serveur est plein
+	 */
+	public boolean isFull(boolean countNewPlayer) {
+		int count = lesJoueurs.size();
+		if (countNewPlayer) {
+			count++; // On compte comme si le joueur était déjà connecté
+		}
+		return count >= MAX_PLAYERS;
 	}
 
 }

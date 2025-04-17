@@ -1,5 +1,6 @@
 package outils.connexion;
 
+import controleur.Controle;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,7 +12,7 @@ import java.net.Socket;
  */
 public class ServeurSocket extends Thread {
 
-	// propriétés
+	// propriÃ©tÃ©s
 	private Object leRecepteur ;
 	private ServerSocket serverSocket ;
 	
@@ -22,34 +23,49 @@ public class ServeurSocket extends Thread {
 	 */
 	public ServeurSocket(Object leRecepteur, int port) {
 		this.leRecepteur = leRecepteur ;
-		// création du socket serveur d'écoute des clients
+		// crÃ©ation du socket serveur d'Ã©coute des clients
 		try {
 			this.serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
-			System.out.println("erreur grave création socket serveur : "+e);
+			System.out.println("erreur grave crÃ©ation socket serveur : "+e);
 			System.exit(0);
 		}
-		// démarrage du thread d'écoute (attente d'un client)
+		// dÃ©marrage du thread d'Ã©coute (attente d'un client)
 		this.start();
 	}
 	
 	/**
-	 * Méthode thread qui va attendre la connexion d'un client
+	 * MÃ©thode thread qui va attendre la connexion d'un client
 	 */
 	public void run() {
-		Socket socket ;
-		// boucle infinie pour attendre un nouveau client
+		Socket socket;
 		while (true) {
 			try {
 				System.out.println("le serveur attend");
 				socket = serverSocket.accept();
-				System.out.println("un client s'est connecté");
-				new Connection(socket, leRecepteur);
+				
+				// VÃ©rifier si le serveur est plein
+				if (leRecepteur instanceof Controle) {
+					Controle controle = (Controle) leRecepteur;
+					if (controle.isFull()){
+						// Informer le client que le serveur est plein
+						Connection connection = new Connection(socket, null);
+						connection.envoi("Server is full. Cannot accept new players.");
+						try {
+							connection.getSocket().close();
+						} catch (IOException e) {
+							System.out.println("Erreur lors de la fermeture de la connexion : " + e);
+						}
+						continue;
+					}
+				}
+				System.out.println("un client s'est connectÃ©");
+				@SuppressWarnings("unused")
+				Connection connection = new Connection(socket, leRecepteur);
 			} catch (IOException e) {
-				System.out.println("erreur sur l'objet serverSocket : "+e);
+				System.out.println("erreur sur l'objet serverSocket : " + e);
 				System.exit(0);
 			}
 		}
 	}
-	
 }

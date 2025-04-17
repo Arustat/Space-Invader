@@ -45,7 +45,12 @@ public class JeuClient extends Jeu {
 			this.controle.evenementModele(this, "ajout panel murs", info);
 		}
 		else if (info instanceof Label) {
-			this.controle.evenementModele(this, "ajout joueur", info);
+			Label label = (Label)info;
+			if (label.getjLabel() instanceof HealthBar) {
+				this.controle.evenementModele(this, "ajout healthbar", info);
+			} else {
+				this.controle.evenementModele(this, "ajout joueur", info);
+			}
 		}
 		else if (info instanceof Integer) {
 			this.controle.evenementModele(this, "son", info);

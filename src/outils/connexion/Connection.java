@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
  */
 public class Connection extends Thread {
 	
-	// propri�t�s
+	// propriétés
 	private Object leRecepteur ;
 	private ObjectInputStream in ;
 	private ObjectOutputStream out ;
@@ -26,25 +26,27 @@ public class Connection extends Thread {
 	 */
 	public Connection(Socket socket, Object leRecepteur) {
 		this.socket = socket;
-		this.leRecepteur = leRecepteur ;
-		// cr�ation du canal de sortie pour envoyer des informations
+		this.leRecepteur = leRecepteur;
+		// création du canal de sortie pour envoyer des informations
 		try {
-			this.out = new ObjectOutputStream(socket.getOutputStream()) ;
+			this.out = new ObjectOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
-			System.out.println("erreur cr�ation canal out : "+e);
+			System.out.println("erreur création canal out : " + e);
 			System.exit(0);
 		}
-		// cr�ation du canal d'entr�e pour recevoir des informations
+		// création du canal d'entrée pour recevoir des informations
 		try {
-			this.in = new ObjectInputStream(socket.getInputStream()) ;
+			this.in = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
-			System.out.println("erreur cr�ation canal in : "+e);
+			System.out.println("erreur création canal in : " + e);
 			System.exit(0);
 		}
-		// d�marrage du thread d'�coute (attente d'un message de l'ordi distant)
-		this.start() ;
-		// envoi de l'instance de connexion vers le recepteur (g�n�ralement le controleur)
-		((controleur.Controle)this.leRecepteur).setConnection(this) ;
+		// démarrage du thread d'écoute (attente d'un message de l'ordi distant)
+		this.start();
+		// envoi de l'instance de connexion vers le recepteur (généralement le controleur)
+		if (this.leRecepteur != null) {
+			((controleur.Controle)this.leRecepteur).setConnection(this);
+		}
 	}
 	
 	public synchronized void envoi(Object unObjet) {
@@ -59,34 +61,37 @@ public class Connection extends Thread {
 	}
 	
 	/**
-	 * M�thode thread qui permet d'attendre des message provenant de l'ordi distant
+	 * Méthode thread qui permet d'attendre des message provenant de l'ordi distant
 	 */
 	public void run() {
-		boolean inOk = true ;
-		Object reception ;
+		boolean inOk = true;
+		Object reception;
+		
+		// Si le récepteur est null, ne pas exécuter la boucle d'écoute
+		if (this.leRecepteur == null) {
+			return;
+		}
+		
 		while (inOk) {
 			try {
 				reception = in.readObject();
-				System.out.println(reception);
-				System.out.println(this);
 				((controleur.Controle)this.leRecepteur).receptionInfo(this, reception);
 			} catch (ClassNotFoundException e) {
-				System.out.println("erreur de classe sur r�ception : "+e);
+				System.out.println("erreur de classe sur réception : " + e);
 				e.printStackTrace();  // Affiche la pile d'appel
 				System.exit(0);
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "l'ordinateur distant est d�connect�");
-				inOk = false ;
+				JOptionPane.showMessageDialog(null, "l'ordinateur distant est déconnecté");
+				inOk = false;
 				((controleur.Controle)this.leRecepteur).deconnection(this);
 				try {
 					in.close();
 				} catch (IOException e1) {
-					System.out.println("la fermeture du canal d'entr�e a �chou� : "+e);
+					System.out.println("la fermeture du canal d'entrée a échoué : " + e);
 					e.printStackTrace();  // Affiche la pile d'appel
 				}
 			}
 		}
-		
 	}
 	/**
      * Retourne le socket associé à cette connexion

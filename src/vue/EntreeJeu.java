@@ -1,24 +1,21 @@
 package vue;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
 import controleur.Controle;
 import controleur.Global;
-
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.InputStream;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 
 /**
  * Frame d'entr�e dans le jeu
@@ -41,6 +38,13 @@ public class EntreeJeu extends JFrame implements Global{
 		controle.evenementVue(this, "serveur");
 	}
 	
+	public void afficherMessageServeurPlein() {
+		JOptionPane.showMessageDialog(this,
+			"Le serveur est plein. Maximum 2 joueurs autorisés.",
+			"Connexion refusée",
+			JOptionPane.WARNING_MESSAGE);
+	}
+
 	/**
 	 * clic sur le bouton Exit pour arr�ter l'application
 	 */

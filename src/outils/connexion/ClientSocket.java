@@ -7,13 +7,13 @@ import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 
 /**
- * Gestion d'un client : création d'une connexion cliente
+ * Gestion d'un client : crï¿½ation d'une connexion cliente
  * @author emds
  *
  */
 public class ClientSocket {
 	
-	// propriétés
+	// propriï¿½tï¿½s
 	boolean connexionOk ;
 
 	/**
@@ -26,7 +26,7 @@ public class ClientSocket {
 		connexionOk = false ;
 		try {
 			Socket socket = new Socket(ip, port);
-			System.out.println("connexion serveur réussie");
+			System.out.println("connexion serveur rï¿½ussie");
 			connexionOk = true;
 			new Connection(socket, leRecepteur) ;
 		} catch (UnknownHostException e) {

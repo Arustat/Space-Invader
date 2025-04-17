@@ -20,7 +20,7 @@ import outils.connexion.Connection;
 public class Joueur extends Objet implements Global {
 	// attention renommer MAXVIE PAR DEPVIE
 	// constantes
-	private static final int MAXVIE = 10 ; // vie de départ pour tous les joueurs
+	private static final int DEPVIE = 10 ; // vie de départ pour tous les joueurs
 	private static final int GAIN = 1 ; // gain de points de vie lors d'une attaque
 	private static final int PERTE = 2 ; // perte de points de vie lors d'une attaque
 	
@@ -35,13 +35,16 @@ public class Joueur extends Objet implements Global {
 	private Boule boule ; // la boule du joueur
 	private Timer time_animation; //Temps d'animation d'un sprite
 	private Explosion explosion;
+	private HealthBar healthBar;
+	private Label healthBarLabel; // Stockage du Label de la barre de vie
+
 	
 	/**
 	 * Constructeur
 	 */
 	public Joueur(JeuServeur jeuServeur) {
 		this.jeuServeur = jeuServeur ;
-		vie = MAXVIE ;
+		vie = DEPVIE ;
 		etape = 1 ;
 		orientation = DROITE ;
 	}
@@ -82,11 +85,18 @@ public class Joueur extends Objet implements Global {
 	public void affiche(int etape) {
 		label.getjLabel().setBounds(posX, posY, L_PERSO, H_PERSO);
 		label.getjLabel().setIcon(new ImageIcon(PERSO+numPerso+"_"+ etape+ EXTIMAGE));
+		// Position du message
 		message.getjLabel().setBounds(posX-10, posY+H_PERSO, L_PERSO+10, H_MESSAGE);
-		message.getjLabel().setText(pseudo+" : "+vie);
+		message.getjLabel().setText(pseudo);
+
+		// Position et mise à jour de la barre de vie
+		healthBar.setBounds(posX, posY + H_PERSO + 5, 50, 5);
+		healthBar.setHealth(vie);
+
 		// envoi du personnage à tous les autres joueurs
 		jeuServeur.envoi(label);
 		jeuServeur.envoi(message);
+		jeuServeur.envoi(healthBarLabel);
 	}
 	
 	/**
@@ -127,6 +137,15 @@ public class Joueur extends Objet implements Global {
 		this.message.getjLabel().setBackground(Color.BLACK); // Fond noir
 		this.message.getjLabel().setOpaque(true); // Très important pour afficher le fond
 		jeuServeur.nouveauLabelJeu(this.message);
+
+		// Création de la barre de vie
+		this.healthBar = new HealthBar(DEPVIE);
+		this.healthBar.setSize(50, 5);
+		this.healthBar.setVisible(true);
+		this.healthBarLabel = new Label(Label.getNbLabel(), this.healthBar);
+		Label.setNbLabel(Label.getNbLabel() + 1);
+		jeuServeur.nouveauLabelJeu(this.healthBarLabel);
+
 		// calcul de la première position aléatoire
 		premierePosition(lesJoueurs, lesMurs) ;
 		// affichage du personnage
@@ -250,7 +269,8 @@ public class Joueur extends Objet implements Global {
 	 * Gain de points de vie après avoir touché un joueur
 	 */
 	public void gainVie() {
-		vie += GAIN ;
+		vie += GAIN;
+		healthBar.setHealth(vie);
 	}
 	
 	/**
@@ -258,6 +278,7 @@ public class Joueur extends Objet implements Global {
 	 */
 	public void perteVie() {
 		vie = Math.max(vie-PERTE, 0);
+    	healthBar.setHealth(vie);
 	}
 	
 	/**
@@ -282,12 +303,14 @@ public class Joueur extends Objet implements Global {
 			label.getjLabel().setVisible(false);
 			message.getjLabel().setVisible(false);
 			boule.getLabel().getjLabel().setVisible(false);
+			healthBar.setVisible(false);
 			
 			// Envoyer les mises à jour uniquement aux joueurs encore connectés
 			try {
 				jeuServeur.envoi(label);
 				jeuServeur.envoi(message);
 				jeuServeur.envoi(boule.getLabel());
+				jeuServeur.envoi(healthBarLabel);
 			} catch (Exception e) {
 				// Ignorer les erreurs de connexion lors de la déconnexion
 				System.out.println("Erreur lors de l'envoi des informations de déconnexion : " + e.getMessage());

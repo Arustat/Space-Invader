@@ -1,10 +1,9 @@
 package modele;
 
+import controleur.Global;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
-import controleur.Global;
 
 /**
  * Gestion des murs

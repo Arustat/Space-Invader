@@ -17,6 +17,7 @@ public class Boule extends Objet implements Global {
 
 	// propriétés
 	private JeuServeur jeuServeur ;
+	private Attaque attaque;
 	
 	/**
 	 * Constructeur
@@ -50,7 +51,7 @@ public class Boule extends Objet implements Global {
 		label.getjLabel().setVisible(true);
 	
 		// Démarrer l'attaque (déplacement de la boule vers le haut)
-		new Attaque(attaquant, jeuServeur, lesmurs, lesjoueurs);
+		attaque = new Attaque(attaquant, jeuServeur, lesmurs, lesjoueurs);
 	}
 	
 	

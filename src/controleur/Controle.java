@@ -182,15 +182,29 @@ public class Controle implements Global {
 	 * @param info
 	 */
 	private void evenementJeuClient(String ordre, Object info) {
+		// Si frmArene n'est pas encore initialisée, on ignore les événements graphiques
+		if (this.frmArene == null) {
+			return;
+		}
+		
 		if(ordre.equals("ajout panel murs")) {
 			this.frmArene.ajoutPanelMurs((JPanel)info) ;
 		}else if (ordre.equals("ajout joueur")) {
+			this.frmArene.ajoutModifJoueur(((Label)info).getNumLabel(), ((Label)info).getjLabel());
+		}else if (ordre.equals("ajout healthbar")) {
 			this.frmArene.ajoutModifJoueur(((Label)info).getNumLabel(), ((Label)info).getjLabel());
 		}else if (ordre.equals("remplace chat")) {
 			this.frmArene.remplaceChat((String)info);
 		}else if (ordre.equals("son")) {
 			this.frmArene.joueSon((Integer)info);
 		}
+	}
+
+	public boolean isFull() {
+		if (this.leJeu instanceof JeuServeur) {
+			return ((JeuServeur) this.leJeu).isFull(false);
+		}
+		return false;
 	}
 
 }
