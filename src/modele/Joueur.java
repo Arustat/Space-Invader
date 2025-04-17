@@ -274,11 +274,20 @@ public class Joueur extends Objet implements Global {
 	}
 	
 	/**
-	 * Perte de points de vie après avoir été touché 
+	 * Perte de points de vie après avoir été touché
 	 */
 	public void perteVie() {
-		vie = Math.max(vie-PERTE, 0);
-    	healthBar.setHealth(vie);
+		vie = Math.max(vie - PERTE, 0);
+		healthBar.setHealth(vie);
+	}
+	
+	/**
+	 * Perte de points de vie après avoir été touché, avec un montant spécifié
+	 * @param montant le nombre de points de vie à perdre
+	 */
+	public void perteVie(int montant) {
+		vie = Math.max(vie - montant, 0);
+		healthBar.setHealth(vie);
 	}
 	
 	/**
@@ -295,7 +304,7 @@ public class Joueur extends Objet implements Global {
 	public void departJoueur() {
 		if (!(label==null)) {
 			// Initialiser l'explosion
-			explosion = new Explosion(posX, posY);
+			explosion = new Explosion(posX, posY, jeuServeur);
 			jeuServeur.nouveauLabelJeu(explosion.getLabel());
 			explosion.startAnimation();
 
@@ -303,7 +312,7 @@ public class Joueur extends Objet implements Global {
 			label.getjLabel().setVisible(false);
 			message.getjLabel().setVisible(false);
 			boule.getLabel().getjLabel().setVisible(false);
-			healthBar.setVisible(false);
+			healthBarLabel.getjLabel().setVisible(false); // Cacher la barre de vie aussi
 			
 			// Envoyer les mises à jour uniquement aux joueurs encore connectés
 			try {

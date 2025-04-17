@@ -15,6 +15,7 @@ public class EnemyData implements Serializable {
     private int type;
     private int currentFrame;
     private int id; // Identifiant unique pour cet ennemi
+    private boolean visible; // Visibilité de l'ennemi
     
     /**
      * Constructeur à partir d'un ennemi existant
@@ -26,6 +27,9 @@ public class EnemyData implements Serializable {
         this.type = enemy.getType();
         this.currentFrame = 1; // Frame par défaut
         this.id = id;
+        this.visible = (enemy.getLabel() != null && 
+                       enemy.getLabel().getjLabel() != null && 
+                       enemy.getLabel().getjLabel().isVisible());
     }
     
     /**
@@ -61,5 +65,12 @@ public class EnemyData implements Serializable {
      */
     public int getId() {
         return id;
+    }
+    
+    /**
+     * @return La visibilité de l'ennemi
+     */
+    public boolean isVisible() {
+        return visible;
     }
 } 

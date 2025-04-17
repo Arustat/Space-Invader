@@ -8,13 +8,13 @@ import outils.connexion.Connection;
 import outils.son.Son;
 
 /**
- * Gestion de l'attaque (boule tir�e, joueur �ventuellement touch�)
+ * Gestion de l'attaque (boule tirée, joueur éventuellement touché)
  * @author emds
  *
  */
 public class Attaque extends Thread implements Global {
 
-	// propri�t�s
+	// propriétés
 	private Joueur attaquant ;
 	private JeuServeur jeuServeur ;
 	private ArrayList<Mur> lesMurs = new ArrayList<Mur>() ;
@@ -34,7 +34,7 @@ public class Attaque extends Thread implements Global {
 	}
 
 	/**
-	 * m�thode dans le thread, pour faire bouger la boule
+	 * méthode dans le thread, pour faire bouger la boule
 	 */
 	public void run() {
 		// l'attaquant est mis à la position 1 de la marche
@@ -45,6 +45,8 @@ public class Attaque extends Thread implements Global {
 		
 		// gestion de l'éventuel joueur touché par la boule
 		Joueur victime = null;
+		// gestion de l'éventuel ennemi touché par la boule
+		Enemy ennemiTouche = null;
 	
 		// Initialisation de la vitesse verticale de la boule
 		int vitesseVerticale = -LEPAS; // La boule monte (vers le haut)
@@ -59,15 +61,18 @@ public class Attaque extends Thread implements Global {
 	
 			// Vérifier si la boule touche un joueur
 			victime = toucheJoueur();
-		} while (laboule.getPosY() >= 0 && laboule.getPosY() <= H_ARENE && !toucheMur() && victime == null);
+			
+			// Vérifier si la boule touche un ennemi
+			ennemiTouche = toucheEnnemi();
+		} while (laboule.getPosY() >= 0 && laboule.getPosY() <= H_ARENE && !toucheMur() && victime == null && ennemiTouche == null);
 	
 		if (victime != null && !victime.estMort()) {
 			victime.perteVie();
-			jeuServeur.envoi(HURT);
+			jeuServeur.envoi(SON[HURT]);
 			attaquant.gainVie();
 			if (victime.estMort()) {
-				jeuServeur.envoi(DEATH);
-				Explosion explosion = new Explosion(victime.getPosX(), victime.getPosY());
+				jeuServeur.envoi(SON[DEATH]);
+				Explosion explosion = new Explosion(victime.getPosX(), victime.getPosY(), jeuServeur);
 				jeuServeur.nouveauLabelJeu(explosion.getLabel());
 				explosion.startAnimation();
 				jeuServeur.envoiUn(victime, "GAME_OVER");
@@ -79,6 +84,17 @@ public class Attaque extends Thread implements Global {
 			}
 			attaquant.affiche(1);
 		}
+		
+		// Gérer l'ennemi touché par la boule
+		if (ennemiTouche != null && ennemiTouche.isAlive()) {
+			// Faire mourir l'ennemi
+			ennemiTouche.takeDamage();
+			jeuServeur.envoi(SON[DEATH]);
+			
+			// Donner des points de vie au joueur qui a tué l'ennemi
+			attaquant.gainVie();
+		}
+		
 		// la boule a fini son parcours et redevient invisible
 		laboule.getLabel().getjLabel().setVisible(false);
 		jeuServeur.envoi(laboule.getLabel());
@@ -86,7 +102,7 @@ public class Attaque extends Thread implements Global {
 	
 	
 	/**
-	 * Gestion d'une pause (qui servira � r�guler le mouvement de la boule)
+	 * Gestion d'une pause (qui servira à réguler le mouvement de la boule)
 	 * @param milli
 	 * @param nano
 	 */
@@ -94,7 +110,7 @@ public class Attaque extends Thread implements Global {
 		try {
 			Thread.sleep(milli, nano);
 		} catch (InterruptedException e) {
-			System.out.println("Probl�me sur la pause");
+			System.out.println("Problème sur la pause");
 		}
 	}
 	
@@ -124,5 +140,17 @@ public class Attaque extends Thread implements Global {
 		return null ;
 	}
 	
-	
+	/**
+	 * Controle si la boule touche un ennemi
+	 * @return l'ennemi touché ou null
+	 */
+	private Enemy toucheEnnemi() {
+		ArrayList<Enemy> ennemis = jeuServeur.getWaveManager().getCurrentWave();
+		for (Enemy unEnnemi : ennemis) {
+			if (unEnnemi.isAlive() && attaquant.getBoule().toucheObjet(unEnnemi)) {
+				return unEnnemi;
+			}
+		}
+		return null;
+	}
 }

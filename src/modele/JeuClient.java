@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import outils.connexion.Connection;
 
 /**
@@ -78,12 +79,31 @@ public class JeuClient extends Jeu implements Global {
 				enemyLabels.put(enemyData.getId(), enemyLabel);
 			}
 			
-			// Mise à jour de l'image
-			String imagePath = CHEMINENEMY + "Enemy" + enemyData.getType() + "/" + enemyData.getCurrentFrame() + EXTIMAGE;
-			enemyLabel.setIcon(new ImageIcon(imagePath));
+			// Mise à jour de la visibilité
+			enemyLabel.setVisible(enemyData.isVisible());
 			
-			// Envoi au controleur pour affichage
-			this.controle.evenementModele(this, "ajout enemy", enemyLabel);
+			// Si l'ennemi n'est plus visible, le retirer complètement de l'affichage
+			if (!enemyData.isVisible()) {
+				// Suppression du label de la vue
+				if (enemyLabel.getParent() != null) {
+					enemyLabel.getParent().remove(enemyLabel);
+				}
+				
+				// Si c'est un ennemi qui vient d'être tué, on peut le retirer du HashMap
+				// après un petit délai pour s'assurer que toutes les mises à jour sont terminées
+				final int enemyId = enemyData.getId();
+				new Timer(500, e -> {
+					enemyLabels.remove(enemyId);
+					((Timer)e.getSource()).stop();
+				}).start();
+			} else {
+				// Mise à jour de l'image uniquement si l'ennemi est visible
+				String imagePath = CHEMINENEMY + "Enemy" + enemyData.getType() + "/" + enemyData.getCurrentFrame() + EXTIMAGE;
+				enemyLabel.setIcon(new ImageIcon(imagePath));
+				
+				// Envoi au controleur pour affichage
+				this.controle.evenementModele(this, "ajout enemy", enemyLabel);
+			}
 		}
 		else if (info instanceof Integer) {
 			this.controle.evenementModele(this, "son", info);

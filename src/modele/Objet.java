@@ -51,21 +51,27 @@ public abstract class Objet {
 	 * @param objet
 	 * @return vrai si les 2 objets se touchent
 	 */
-	public boolean toucheObjet (Objet objet) {
+	public boolean toucheObjet(Objet objet) {
 		if (objet.label==null) {
-			return false ;
-		}else{
+			return false;
+		} else {
 			if (objet.label.getjLabel()==null) {
-				return false ;
-			}else{
-				int l_obj = objet.label.getjLabel().getWidth() ;
-				int h_obj = objet.label.getjLabel().getHeight() ;
-				int l_this = this.label.getjLabel().getWidth() ;
-				int h_this = this.label.getjLabel().getHeight() ;
-				return(!((this.posX+l_this<objet.posX ||
+				return false;
+			} else {
+				// Vérifier que les deux objets sont visibles
+				if (!this.label.getjLabel().isVisible() || !objet.label.getjLabel().isVisible()) {
+					return false;
+				}
+			
+				int l_obj = objet.label.getjLabel().getWidth();
+				int h_obj = objet.label.getjLabel().getHeight();
+				int l_this = this.label.getjLabel().getWidth();
+				int h_this = this.label.getjLabel().getHeight();
+				
+				return !((this.posX+l_this<objet.posX ||
 					this.posX>objet.posX+l_obj) || 
 					(this.posY+h_this<objet.posY ||
-					this.posY>objet.posY+h_obj))) ;
+					this.posY>objet.posY+h_obj));
 			}
 		}
 	}

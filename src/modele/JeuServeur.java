@@ -7,6 +7,9 @@ import java.util.Hashtable;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map;
 
 import controleur.Controle;
 import controleur.Global;
@@ -39,7 +42,7 @@ public class JeuServeur extends Jeu implements Global {
 		Label.setNbLabel(0);
 		
 		// Initialisation du WaveManager
-		waveManager = new WaveManager(L_ARENE);
+		waveManager = new WaveManager(L_ARENE, this);
 		
 		// Timer pour mettre à jour les vagues d'ennemis
 		waveTimer = new Timer(16, new ActionListener() {
@@ -47,44 +50,60 @@ public class JeuServeur extends Jeu implements Global {
 			public void actionPerformed(ActionEvent e) {
 				waveManager.update();
 				
-				// Envoi des ennemis aux clients et affichage sur le serveur
-				for (Enemy enemy : waveManager.getCurrentWave()) {
-					if (enemy.isAlive()) {
-						// Affichage sur le serveur
-						controle.evenementModele(JeuServeur.this, "ajout enemy", enemy.getLabel().getjLabel());
+				// Créer une liste de tous les ennemis actuellement dans la vague
+				Set<Enemy> currentEnemies = new HashSet<>(waveManager.getCurrentWave());
+				
+				// Envoyer les ennemis actifs aux clients et les afficher sur le serveur
+				for (Enemy enemy : currentEnemies) {
+					// Affichage sur le serveur
+					controle.evenementModele(JeuServeur.this, "ajout enemy", enemy.getLabel().getjLabel());
+					
+					// Vérifier si cet ennemi a déjà un ID
+					int enemyId = -1;
+					for (int id : enemiesById.keySet()) {
+						if (enemiesById.get(id) == enemy) {
+							enemyId = id;
+							break;
+						}
+					}
+					
+					// Si pas d'ID, en assigner un nouveau
+					if (enemyId == -1) {
+						enemyId = nextEnemyId++;
+						enemiesById.put(enemyId, enemy);
+					}
+					
+					// Créer un EnemyData pour l'envoi au client
+					EnemyData enemyData = new EnemyData(enemy, enemyId);
+					
+					// Envoi aux clients
+					for (Connection connection : lesJoueurs.keySet()) {
+						envoi(connection, enemyData);
+					}
+				}
+				
+				// Identifier les ennemis qui ne sont plus dans la vague actuelle
+				Set<Integer> idsToRemove = new HashSet<>();
+				for (Map.Entry<Integer, Enemy> entry : enemiesById.entrySet()) {
+					int id = entry.getKey();
+					Enemy enemy = entry.getValue();
+					
+					if (!currentEnemies.contains(enemy) || !enemy.isAlive()) {
+						idsToRemove.add(id);
 						
-						// Vérifier si cet ennemi a déjà un ID
-						int enemyId = -1;
-						for (int id : enemiesById.keySet()) {
-							if (enemiesById.get(id) == enemy) {
-								enemyId = id;
-								break;
+						// Si l'ennemi n'est pas dans la vague actuelle ou n'est plus vivant, 
+						// envoyer une dernière mise à jour pour s'assurer qu'il disparaît chez les clients
+						if (enemy.getLabel() != null && enemy.getLabel().getjLabel() != null) {
+							enemy.getLabel().getjLabel().setVisible(false);
+							EnemyData lastUpdate = new EnemyData(enemy, id);
+							for (Connection connection : lesJoueurs.keySet()) {
+								envoi(connection, lastUpdate);
 							}
-						}
-						
-						// Si pas d'ID, en assigner un nouveau
-						if (enemyId == -1) {
-							enemyId = nextEnemyId++;
-							enemiesById.put(enemyId, enemy);
-						}
-						
-						// Créer un EnemyData pour l'envoi au client
-						EnemyData enemyData = new EnemyData(enemy, enemyId);
-						
-						// Envoi aux clients
-						for (Connection connection : lesJoueurs.keySet()) {
-							envoi(connection, enemyData);
 						}
 					}
 				}
 				
-				// Nettoyage des ennemis morts de la map
-				ArrayList<Integer> idsToRemove = new ArrayList<>();
-				for (int id : enemiesById.keySet()) {
-					if (!enemiesById.get(id).isAlive() || !waveManager.getCurrentWave().contains(enemiesById.get(id))) {
-						idsToRemove.add(id);
-					}
-				}
+				// Supprimer les ennemis marqués pour suppression
 				for (int id : idsToRemove) {
 					enemiesById.remove(id);
 				}
@@ -176,7 +195,17 @@ public class JeuServeur extends Jeu implements Global {
 				break ;
 			case ACTION:
 				if(!lesJoueurs.get(connection).estMort()) {
-					lesJoueurs.get(connection).action(Integer.parseInt(infos[1]), lesJoueurs, lesMurs);
+					// Nouvelle version - gestion des actions multiples
+					// Format: ACTION~action1,action2,action3...
+					String[] actions = infos[1].split(",");
+					for (String actionStr : actions) {
+						try {
+							int actionCode = Integer.parseInt(actionStr.trim());
+							lesJoueurs.get(connection).action(actionCode, lesJoueurs, lesMurs);
+						} catch (NumberFormatException e) {
+							System.out.println("Action invalide: " + actionStr);
+						}
+					}
 				}
 				break;
 		}
@@ -213,6 +242,46 @@ public class JeuServeur extends Jeu implements Global {
 			count++; // On compte comme si le joueur était déjà connecté
 		}
 		return count >= MAX_PLAYERS;
+	}
+	
+	/**
+	 * Récupère la collection des joueurs
+	 * @return la table de hachage des joueurs
+	 */
+	public Hashtable<Connection, Joueur> getJoueurs() {
+		return lesJoueurs;
+	}
+	
+	/**
+	 * Récupère le gestionnaire de vagues
+	 * @return le gestionnaire de vagues
+	 */
+	public WaveManager getWaveManager() {
+		return waveManager;
+	}
+
+	/**
+	 * Envoie une mise à jour concernant un ennemi à tous les clients
+	 * @param enemy L'ennemi à mettre à jour chez les clients
+	 */
+	public void updateEnemy(Enemy enemy) {
+		// Chercher l'ID de l'ennemi
+		int enemyId = -1;
+		for (int id : enemiesById.keySet()) {
+			if (enemiesById.get(id) == enemy) {
+				enemyId = id;
+				break;
+			}
+		}
+		
+		// S'assurer que l'ennemi a un ID
+		if (enemyId != -1) {
+			// Créer et envoyer les données de l'ennemi
+			EnemyData enemyData = new EnemyData(enemy, enemyId);
+			for (Connection connection : lesJoueurs.keySet()) {
+				envoi(connection, enemyData);
+			}
+		}
 	}
 
 }

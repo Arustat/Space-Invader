@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +23,7 @@ import modele.HealthBar;
 import outils.son.Son;
 
 /**
- * Frame de l'arne du jeu
+ * Frame de l'arène du jeu
  * @author emds
  *
  */
@@ -38,6 +40,9 @@ public class Arene extends JFrame implements Global {
 	private JTextArea txtChat ;
 	private ArrayList<Layer> layers;
 	private JLabel lblGameOver;
+	
+	// Set de touches actuellement pressées
+	private Set<Integer> keysPressed = new HashSet<>();
 	
 	/**
 	 * Retourne le contenu complet de la zone de chat
@@ -303,6 +308,40 @@ public class Arene extends JFrame implements Global {
 		}
 		(new Son(SONAMBIANCE)).playContinue() ; 
 		
+		// Gestionnaire de touches avancé (uniquement pour le client)
+		if (client) {
+			KeyAdapter keyAdapter = new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					// Ajouter la touche au set de touches pressées
+					keysPressed.add(e.getKeyCode());
+					
+					// Gérer les actions en fonction des touches pressées
+					processKeyActions();
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					// Retirer la touche du set de touches pressées
+					keysPressed.remove(e.getKeyCode());
+				}
+			};
+			
+			// Ajouter le gestionnaire de touches à tous les composants importants
+			// Vérifier que les composants ne sont pas null avant d'ajouter l'écouteur
+			if (contentPane != null) {
+				contentPane.addKeyListener(keyAdapter);
+			}
+			if (txtSaisie != null) {
+				txtSaisie.addKeyListener(keyAdapter);
+			}
+			if (txtChat != null) {
+				txtChat.addKeyListener(keyAdapter);
+			}
+			if (jpnJeu != null) {
+				jpnJeu.addKeyListener(keyAdapter);
+			}
+		}
 	}
 	
 	public void joueSon(int nbSon) {
@@ -311,32 +350,51 @@ public class Arene extends JFrame implements Global {
 	
 
 	private void contentPane_keyPressed(KeyEvent arg0) {
-		int valeur = -1;
-		
-		switch(arg0.getKeyCode()) {
-			case KeyEvent.VK_UP:
-				valeur = HAUT;
-				break;
-			case KeyEvent.VK_DOWN:
-				valeur = BAS;
-				break;
-			case KeyEvent.VK_LEFT:
-				valeur = GAUCHE;
-				break;
-			case KeyEvent.VK_RIGHT:
-				valeur = DROITE;
-				break;
-			case KeyEvent.VK_SPACE:
-				valeur = TIRE;
-				break;
-				
-		}
-		
-		if(valeur != -1) {
-			controle.evenementVue(this, ACTION+SEPARE+valeur);
-		}
-		
+		// Cette méthode redirigeait vers processKeyActions, mais elle est déjà appelée par notre KeyAdapter
+		// Pour éviter les doublons, nous ne faisons rien ici
 	}
+
+	/**
+     * Traite les actions en fonction des touches actuellement pressées
+     */
+    private void processKeyActions() {
+        // Ne traiter les actions que pour les clients
+        if (!client) {
+            return;
+        }
+        
+        // Structure pour stocker les actions multiples
+        Set<Integer> actions = new HashSet<>();
+        
+        // Vérifier quelles touches sont pressées
+        if (keysPressed.contains(KeyEvent.VK_UP)) {
+            actions.add(HAUT);
+        }
+        if (keysPressed.contains(KeyEvent.VK_DOWN)) {
+            actions.add(BAS);
+        }
+        if (keysPressed.contains(KeyEvent.VK_LEFT)) {
+            actions.add(GAUCHE);
+        }
+        if (keysPressed.contains(KeyEvent.VK_RIGHT)) {
+            actions.add(DROITE);
+        }
+        if (keysPressed.contains(KeyEvent.VK_SPACE)) {
+            actions.add(TIRE);
+        }
+        
+        // Envoyer les actions si au moins une est présente
+        if (!actions.isEmpty()) {
+            StringBuilder actionStr = new StringBuilder();
+            for (Integer action : actions) {
+                if (actionStr.length() > 0) {
+                    actionStr.append(",");
+                }
+                actionStr.append(action);
+            }
+            controle.evenementVue(this, ACTION+SEPARE+actionStr.toString());
+        }
+    }
 
 	public void afficherGameOver() {
 		SwingUtilities.invokeLater(() -> {

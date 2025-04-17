@@ -15,13 +15,16 @@ public class Enemy extends Objet implements Global {
     private int type; // Type d'ennemi (pour différentes variétés)
     private int currentFrame;
     private Timer animationTimer;
+    private JeuServeur jeuServeur; // Référence au JeuServeur
+    private Explosion explosion; // Référence à l'explosion
 
-    public Enemy(int x, int y, int type) {
+    public Enemy(int x, int y, int type, JeuServeur jeuServeur) {
         this.posX = x;
         this.posY = y;
         this.type = type;
         this.isAlive = true;
         this.currentFrame = 1;
+        this.jeuServeur = jeuServeur;
         
         // Configuration selon le type d'ennemi
         switch(type) {
@@ -90,13 +93,38 @@ public class Enemy extends Objet implements Global {
             if (animationTimer != null) {
                 animationTimer.cancel();
             }
-            if (label != null && label.getjLabel() != null) {
-                label.getjLabel().setVisible(false);
+            
+            // Créer et démarrer l'animation d'explosion
+            if (jeuServeur != null) {
+                explosion = new Explosion(posX, posY, jeuServeur);
+                jeuServeur.nouveauLabelJeu(explosion.getLabel());
+                explosion.startAnimation();
+                
+                // Jouer le son de mort
+                jeuServeur.envoi(SON[DEATH]);
+                
+                // Rendre l'ennemi invisible immédiatement
+                if (label != null && label.getjLabel() != null) {
+                    label.getjLabel().setVisible(false);
+                    
+                    // Mettre à jour l'ennemi chez tous les clients
+                    jeuServeur.updateEnemy(this);
+                }
             }
         }
     }
 
     public boolean isAlive() {
+        // Un ennemi n'est pas vivant si son état interne dit qu'il est mort
+        // ou si son label est invisible
+        if (!isAlive) {
+            return false;
+        }
+        
+        if (label != null && label.getjLabel() != null) {
+            return label.getjLabel().isVisible();
+        }
+        
         return isAlive;
     }
 
