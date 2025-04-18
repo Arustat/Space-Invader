@@ -103,6 +103,10 @@ public class Enemy extends Objet implements Global {
                 // Jouer le son de mort
                 jeuServeur.envoi(SON[DEATH]);
                 
+                // Mettre à jour le score commun avec les points de l'ennemi
+                System.out.println("Enemy: Ajout de " + points + " points au score commun");
+                jeuServeur.updateScoreCommun(points);
+                
                 // Rendre l'ennemi invisible immédiatement
                 if (label != null && label.getjLabel() != null) {
                     label.getjLabel().setVisible(false);

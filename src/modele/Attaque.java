@@ -92,11 +92,6 @@ public class Attaque extends Thread implements Global {
 			
 			// Donner des points de vie au joueur qui a tué l'ennemi
 			attaquant.gainVie();
-			
-			// Mettre à jour le score commun avec les points de l'ennemi
-			int points = ennemiTouche.getPoints();
-			System.out.println("Attaque: Ajout de " + points + " points au score commun");
-			jeuServeur.updateScoreCommun(points);
 		}
 		
 		// la boule a fini son parcours et redevient invisible
