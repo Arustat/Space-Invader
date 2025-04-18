@@ -41,7 +41,7 @@ public class Boule extends Objet implements Global {
 	 * 
 	 * @param attaquant
 	 */
-	public void tireBoule(Joueur attaquant, ArrayList<Mur> lesmurs, Hashtable<Connection, Joueur> lesjoueurs) {
+	public void tireBoule(Joueur attaquant, Hashtable<Connection, Joueur> lesjoueurs) {
 		// Positionner la boule : milieu haut du joueur
 		posX = attaquant.getPosX() + (L_PERSO / 2) - (L_BOULE / 2);
 		posY = attaquant.getPosY() - H_BOULE; // Juste au-dessus du joueur
@@ -51,7 +51,7 @@ public class Boule extends Objet implements Global {
 		label.getjLabel().setVisible(true);
 	
 		// Démarrer l'attaque (déplacement de la boule vers le haut)
-		attaque = new Attaque(attaquant, jeuServeur, lesmurs, lesjoueurs);
+		attaque = new Attaque(attaquant, jeuServeur, lesjoueurs);
 	}
 	
 	

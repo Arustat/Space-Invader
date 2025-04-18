@@ -17,7 +17,6 @@ public class Attaque extends Thread implements Global {
 	// propriétés
 	private Joueur attaquant ;
 	private JeuServeur jeuServeur ;
-	private ArrayList<Mur> lesMurs = new ArrayList<Mur>() ;
 	private Hashtable<Connection, Joueur> lesJoueurs = new Hashtable<Connection, Joueur>() ;
 	
 	/**
@@ -25,10 +24,9 @@ public class Attaque extends Thread implements Global {
 	 * @param attaquant
 	 * @param jeuServeur
 	 */
-	public Attaque(Joueur attaquant, JeuServeur jeuServeur, ArrayList<Mur> lesmurs, Hashtable<Connection, Joueur> lesjoueurs) {
+	public Attaque(Joueur attaquant, JeuServeur jeuServeur, Hashtable<Connection, Joueur> lesjoueurs) {
 		this.attaquant = attaquant;
 		this.jeuServeur = jeuServeur;
-		this.lesMurs = lesmurs;
 		this.lesJoueurs = lesjoueurs;
 		this.start();
 	}
@@ -64,7 +62,7 @@ public class Attaque extends Thread implements Global {
 			
 			// Vérifier si la boule touche un ennemi
 			ennemiTouche = toucheEnnemi();
-		} while (laboule.getPosY() >= 0 && laboule.getPosY() <= H_ARENE && !toucheMur() && victime == null && ennemiTouche == null);
+		} while (laboule.getPosY() >= 0 && laboule.getPosY() <= H_ARENE &&  victime == null && ennemiTouche == null);
 	
 		if (victime != null && !victime.estMort()) {
 			victime.perteVie();
@@ -114,18 +112,6 @@ public class Attaque extends Thread implements Global {
 		}
 	}
 	
-	/**
-	 * Controle si la boule touche un mur
-	 * @return
-	 */
-	private boolean toucheMur() {
-		for (Mur unMur : lesMurs) {
-			if (attaquant.getBoule().toucheObjet(unMur)) {
-				return true ;
-			}
-		}
-		return false ;		
-	}
 
 	/**
 	 * Controle si la boule touche un joueur

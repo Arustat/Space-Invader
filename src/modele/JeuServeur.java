@@ -23,7 +23,6 @@ import outils.connexion.Connection;
 public class JeuServeur extends Jeu implements Global {
 
 	// proprits
-	private ArrayList<Mur> lesMurs = new ArrayList<Mur>() ;
 	private Hashtable<Connection, Joueur> lesJoueurs = new Hashtable<Connection, Joueur>() ;
 	private ArrayList<Joueur> lesJoueursDansLordre = new ArrayList<Joueur>() ;
 	private static final int MAX_PLAYERS = 2;
@@ -118,15 +117,6 @@ public class JeuServeur extends Jeu implements Global {
 		waveTimer.start();
 	}
 	
-	/**
-	 * Gnration des murs
-	 */
-	public void constructionMurs() {
-		for (int k=0 ; k<NBMURS ; k++) {
-			lesMurs.add(new Mur()) ;
-			this.controle.evenementModele(this, "ajout mur", lesMurs.get(lesMurs.size()-1).getLabel().getjLabel());
-		}
-	}
 	
 	/**
 	 * Demande au controleur d'ajouter un joueuer dans l'arène
@@ -183,7 +173,7 @@ public class JeuServeur extends Jeu implements Global {
 					super.envoi(connection, joueur.getBoule().getLabel());
 				}
 				// initialisation du nouveau joueur (positionnement aléatoire...)
-				lesJoueurs.get(connection).initPerso(infos[1], Integer.parseInt(infos[2]), lesJoueurs, lesMurs);
+				lesJoueurs.get(connection).initPerso(infos[1], Integer.parseInt(infos[2]), lesJoueurs);
 				// insertion du nouveau joueur dans la liste dans l'ordre, pour l'envoyer dans l'ordre aux joueurs suivants
 				lesJoueursDansLordre.add(lesJoueurs.get(connection)) ;
 				laPhrase = "***"+lesJoueurs.get(connection).getPseudo()+" vient de se connecter ***" ;
@@ -201,7 +191,7 @@ public class JeuServeur extends Jeu implements Global {
 					for (String actionStr : actions) {
 						try {
 							int actionCode = Integer.parseInt(actionStr.trim());
-							lesJoueurs.get(connection).action(actionCode, lesJoueurs, lesMurs);
+							lesJoueurs.get(connection).action(actionCode, lesJoueurs);
 						} catch (NumberFormatException e) {
 							System.out.println("Action invalide: " + actionStr);
 						}

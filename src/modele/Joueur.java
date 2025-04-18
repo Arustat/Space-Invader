@@ -119,7 +119,7 @@ public class Joueur extends Objet implements Global {
 	 * @param pseudo
 	 * @param numPerso
 	 */
-	public void initPerso(String pseudo, int numPerso, Hashtable<Connection, Joueur> lesJoueurs, ArrayList<Mur> lesMurs) {
+	public void initPerso(String pseudo, int numPerso, Hashtable<Connection, Joueur> lesJoueurs) {
 		this.pseudo = pseudo ;
 		this.numPerso = numPerso ;
 		// création de l'affichage du personnage
@@ -147,7 +147,7 @@ public class Joueur extends Objet implements Global {
 		jeuServeur.nouveauLabelJeu(this.healthBarLabel);
 
 		// calcul de la première position aléatoire
-		premierePosition(lesJoueurs, lesMurs) ;
+		premierePosition(lesJoueurs) ;
 		// affichage du personnage
 		affiche(etape) ;
 		// création de la boule
@@ -172,8 +172,8 @@ public class Joueur extends Objet implements Global {
 						int orientation, // orientation de départ
 						int lepas, // valeur du déplacement (positif ou négatif)
 						int max, // valeur à ne pas dépasser
-						Hashtable<Connection, Joueur> lesJoueurs, // les autres joueurs (pour éviter les collisions)
-						ArrayList<Mur> lesMurs) { // les murs (pour éviter les collisions)
+						Hashtable<Connection, Joueur> lesJoueurs // les autres joueurs (pour éviter les collisions)
+						) { // les murs (pour éviter les collisions)
 		this.orientation = orientation ;
 		int ancpos = position ;
 		position += lepas ;
@@ -185,7 +185,7 @@ public class Joueur extends Objet implements Global {
 			posY = position ;
 		}
 		// controle s'il y a collision
-		if (toucheJoueur(lesJoueurs) || toucheMur(lesMurs)) {
+		if (toucheJoueur(lesJoueurs)) {
 			position = ancpos ;
 		}
 		return position ;
@@ -197,16 +197,16 @@ public class Joueur extends Objet implements Global {
 	 * @param lesJoueurs
 	 * @param lesMurs
 	 */
-	public void action(int action, Hashtable<Connection, Joueur> lesJoueurs, ArrayList<Mur> lesMurs) {
+	public void action(int action, Hashtable<Connection, Joueur> lesJoueurs) {
 		// traite l'action
 		switch (action) {
-			case GAUCHE : this.posX = deplace(action, posX, GAUCHE,     -LEPAS, L_ARENER - L_PERSO, lesJoueurs, lesMurs) ;break ;
-			case DROITE : this.posX = deplace(action, posX, DROITE,      LEPAS, L_ARENER - L_PERSO, lesJoueurs, lesMurs) ;break ;
-			case HAUT :   this.posY = deplace(action, posY, orientation,-LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
-			case BAS :    this.posY = deplace(action, posY, orientation, LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs, lesMurs) ;break ;
+			case GAUCHE : this.posX = deplace(action, posX, GAUCHE,     -LEPAS, L_ARENER - L_PERSO, lesJoueurs) ;break ;
+			case DROITE : this.posX = deplace(action, posX, DROITE,      LEPAS, L_ARENER - L_PERSO, lesJoueurs) ;break ;
+			case HAUT :   this.posY = deplace(action, posY, orientation,-LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs) ;break ;
+			case BAS :    this.posY = deplace(action, posY, orientation, LEPAS, H_ARENER - H_PERSO - H_MESSAGE, lesJoueurs) ;break ;
 			case TIRE :
 				if(!boule.getLabel().getjLabel().isVisible()) {					
-					boule.tireBoule(this,lesMurs,lesJoueurs); 
+					boule.tireBoule(this,lesJoueurs); 
 					
 				}
 				break;
@@ -238,31 +238,18 @@ public class Joueur extends Objet implements Global {
 		return false ;
 	}
 	
-	/**
-	 * Contrôle si le joueur chevauche un des murs
-	 * @param lesMurs
-	 * @return
-	 */
-	private boolean toucheMur(ArrayList<Mur> lesMurs) {
-		for (Mur unMur : lesMurs) {
-			if (toucheObjet(unMur)) {
-				return true ;
-			}
-		}
-		return false ;
-	}
 	
 	/**
 	 * Calcul de la première position aléatoire du joueur (sans chevaucher un autre joueur ou un mur)
 	 * @param lesJoueurs
 	 * @param lesMurs
 	 */
-	private void premierePosition(Hashtable<Connection, Joueur> lesJoueurs, ArrayList<Mur> lesMurs) {
+	private void premierePosition(Hashtable<Connection, Joueur> lesJoueurs) {
 		label.getjLabel().setBounds(0, 0, L_PERSO, H_PERSO);
 		do {
 			posX = (int) Math.round(Math.random() * (L_ARENER - L_PERSO)) ;
 			posY = (int) Math.round(Math.random() * (H_ARENER - H_PERSO - H_MESSAGE)) ;
-		}while(toucheJoueur(lesJoueurs)||toucheMur(lesMurs)) ;
+		}while(toucheJoueur(lesJoueurs)) ;
 	}
 	
 	/**

@@ -98,7 +98,6 @@ public class Controle implements Global {
 			this.leJeu = new JeuServeur(this) ;
 			this.frmEntreeJeu.dispose();
 			this.frmArene = new Arene("serveur", this);
-			((JeuServeur)leJeu).constructionMurs();
 			this.frmArene.setVisible(true);
 		}else{
 			if ((new ClientSocket((String)info, PORT, this)).isConnexionOk()) {
