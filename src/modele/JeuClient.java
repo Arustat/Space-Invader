@@ -48,9 +48,6 @@ public class JeuClient extends Jeu implements Global {
 				this.controle.evenementModele(this, "remplace chat", message);
 			}
 		}
-		else if (info instanceof JPanel) {
-			this.controle.evenementModele(this, "ajout panel murs", info);
-		}
 		else if (info instanceof Label) {
 			Label label = (Label)info;
 			if (label.getjLabel() instanceof HealthBar) {

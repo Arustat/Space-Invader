@@ -31,7 +31,7 @@ public class Arene extends JFrame implements Global {
 
 	private JPanel contentPane;
 	private JTextField txtSaisie;
-	private JPanel jpnMurs ;
+	private JLabel scoreLabel;
 	private Son[] lesson = new Son[SON.length];
 	private JPanel jpnJeu ;
 	private JPanel jpnEnemy;
@@ -64,11 +64,7 @@ public class Arene extends JFrame implements Global {
 	 * Ajout d'un mur
 	 * @param unMur
 	 */
-	public void ajoutMur(JLabel unMur) {
-		jpnMurs.add(unMur);
-		jpnMurs.repaint();
-	}
-	
+
 	public void ajoutEnemy(JLabel unEnemy) {
 		SwingUtilities.invokeLater(() -> {
 			// Vérifier si l'ennemi est déjà dans le panel
@@ -149,11 +145,7 @@ public class Arene extends JFrame implements Global {
 	 * Ajout de tous les murs en une fois
 	 * @param lesMurs
 	 */
-	public void ajoutPanelMurs(JPanel lesMurs) {
-		jpnMurs.add(lesMurs);
-		jpnMurs.repaint();
-		contentPane.requestFocus();
-	}
+
 	
 	/**
 	 * Ajout de tous les enemies en une fois
@@ -187,13 +179,7 @@ public class Arene extends JFrame implements Global {
 		}
 	}
 	
-	/**
-	 * @return jpnMurs
-	 */
-	public JPanel getJpnMurs() {
-		return jpnMurs ;
-	}
-
+	
 	public void gererExplosion(JLabel explosionLabel) {
 		SwingUtilities.invokeLater(() -> {
 			jpnJeu.add(explosionLabel);
@@ -239,11 +225,12 @@ public class Arene extends JFrame implements Global {
 		contentPane.add(jpnJeu);
 		jpnJeu.setLayout(null);
 		
-		jpnMurs = new JPanel();
-		jpnMurs.setBounds(0, 0, L_ARENE, H_ARENE);
-		jpnMurs.setOpaque(false);
-		contentPane.add(jpnMurs);
-		jpnMurs.setLayout(null);
+		scoreLabel = new JLabel("Score : 0");
+		scoreLabel.setForeground(java.awt.Color.WHITE);
+		scoreLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+		scoreLabel.setBounds(10, 10, 150, 30);
+		scoreLabel.setVisible(true);
+		contentPane.add(scoreLabel);
 		
 
         lblGameOver = new JLabel("GAME OVER");

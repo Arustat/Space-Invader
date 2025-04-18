@@ -161,11 +161,7 @@ public class Controle implements Global {
 	 * @param info
 	 */
 	private void evenementJeuServeur(String ordre, Object info) {
-		if(ordre.equals("ajout mur")) {
-			this.frmArene.ajoutMur((JLabel)info);
-		}else if(ordre.equals("envoi panel murs")) {
-			((JeuServeur)leJeu).envoi((Connection)info, frmArene.getJpnMurs());
-		}else if(ordre.equals("ajout joueur")) {
+		if(ordre.equals("ajout joueur")) {
 			this.frmArene.ajoutJoueur((JLabel)info);
 		}else if(ordre.equals("ajout phrase")) {
 			this.frmArene.ajoutChat((String)info);
@@ -186,9 +182,7 @@ public class Controle implements Global {
 			return;
 		}
 		
-		if(ordre.equals("ajout panel murs")) {
-			this.frmArene.ajoutPanelMurs((JPanel)info) ;
-		}else if (ordre.equals("ajout joueur")) {
+		if (ordre.equals("ajout joueur")) {
 			this.frmArene.ajoutModifJoueur(((Label)info).getNumLabel(), ((Label)info).getjLabel());
 		}else if (ordre.equals("ajout healthbar")) {
 			this.frmArene.ajoutModifJoueur(((Label)info).getNumLabel(), ((Label)info).getjLabel());
