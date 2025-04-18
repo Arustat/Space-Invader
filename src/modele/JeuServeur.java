@@ -138,7 +138,7 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void setConnection(Connection connection) {
-        if (lesJoueurs.size() < MAX_PLAYERS) {
+		if (lesJoueurs.size() < MAX_PLAYERS) {
 			this.lesJoueurs.put(connection, new Joueur(this));
 		} else {
 			// Informer le client que le serveur est plein
@@ -149,7 +149,7 @@ public class JeuServeur extends Jeu implements Global {
 				System.out.println("Erreur lors de la fermeture de la connexion : " + e);
 			}
 		}
-    }
+	}
 	
 
 	@Override
@@ -190,6 +190,12 @@ public class JeuServeur extends Jeu implements Global {
 				lesJoueursDansLordre.add(lesJoueurs.get(connection)) ;
 				laPhrase = "***"+lesJoueurs.get(connection).getPseudo()+" vient de se connecter ***" ;
 				controle.evenementModele(this, "ajout phrase", laPhrase);
+				
+				// Si c'est le premier joueur qui arrive dans l'arène, on démarre les vagues
+				if (lesJoueursDansLordre.size() == 1) {
+					waveManager.setWavesActive(true);
+					controle.evenementModele(this, "ajout phrase", "*** Le jeu commence ! Les vagues d'ennemis arrivent ! ***");
+				}
 				break ;
 			case CHAT :
 				laPhrase = lesJoueurs.get(connection).getPseudo()+" > "+infos[1] ;
@@ -218,6 +224,11 @@ public class JeuServeur extends Jeu implements Global {
 		((Joueur)this.lesJoueurs.get(connection)).departJoueur();
 		this.lesJoueurs.remove(connection);
 		
+		// Si plus aucun joueur n'est connecté, on arrête les vagues
+		if (lesJoueurs.isEmpty()) {
+			waveManager.setWavesActive(false);
+			controle.evenementModele(this, "ajout phrase", "*** Tous les joueurs sont partis. Les vagues d'ennemis s'arrêtent. ***");
+		}
 	}
 
 	public void envoiUn(Joueur joueur, Object info) {

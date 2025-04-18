@@ -13,6 +13,7 @@ public class WaveManager implements Global {
     private int spawnDelay;
     private long lastSpawnTime;
     private JeuServeur jeuServeur;
+    private boolean wavesActive; // Nouvelle variable pour suivre l'état des vagues
 
     public WaveManager(int screenWidth, JeuServeur jeuServeur) {
         this.screenWidth = screenWidth;
@@ -23,6 +24,7 @@ public class WaveManager implements Global {
         this.spawnDelay = 1000; // 1 seconde entre chaque spawn
         this.lastSpawnTime = System.currentTimeMillis();
         this.jeuServeur = jeuServeur;
+        this.wavesActive = false; // Les vagues ne sont pas actives par défaut
     }
 
     public void startNewWave() {
@@ -31,7 +33,21 @@ public class WaveManager implements Global {
         currentWave.clear();
     }
 
+    /**
+     * Active ou désactive les vagues d'ennemis
+     * @param active true pour activer les vagues, false pour les désactiver
+     */
+    public void setWavesActive(boolean active) {
+        this.wavesActive = active;
+        if (!active) {
+            // Si on désactive les vagues, on nettoie la vague actuelle
+            currentWave.clear();
+        }
+    }
+
     public void update() {
+        if (!wavesActive) return; // Ne rien faire si les vagues ne sont pas actives
+        
         long currentTime = System.currentTimeMillis();
         
         // Vérifie si on peut spawner un nouvel ennemi
