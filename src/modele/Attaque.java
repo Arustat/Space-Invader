@@ -87,6 +87,7 @@ public class Attaque extends Thread implements Global {
 		if (ennemiTouche != null && ennemiTouche.isAlive()) {
 			// Faire mourir l'ennemi
 			ennemiTouche.takeDamage();
+			
 			jeuServeur.envoi(SON[DEATH]);
 			
 			// Donner des points de vie au joueur qui a tué l'ennemi

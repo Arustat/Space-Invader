@@ -390,4 +390,8 @@ public class Arene extends JFrame implements Global {
 			contentPane.repaint();
 		});
 	}
+	
+	public void updateScore(JPanel unEnemy) {
+		scoreLabel.setText("Score : " + unEnemy.getPoint());
+	}
 }
