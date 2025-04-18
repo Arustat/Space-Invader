@@ -168,6 +168,15 @@ public class Controle implements Global {
 			((JeuServeur)leJeu).envoi(frmArene.getContenuTxtChat());
 		} else if(ordre.equals("ajout enemy")) {
 			frmArene.ajoutEnemy((JLabel)info);
+		} else if(ordre.equals("SCORE")) {
+			System.out.println("Controle: Réception de l'ordre SCORE avec info = " + info);
+			try {
+				int points = Integer.parseInt((String)info);
+				System.out.println("Controle: Mise à jour du score avec " + points + " points");
+				frmArene.updateScore(points);
+			} catch (NumberFormatException e) {
+				System.out.println("Controle: Erreur de conversion du score: " + e.getMessage());
+			}
 		}
 	}
 	
@@ -192,6 +201,9 @@ public class Controle implements Global {
 			this.frmArene.joueSon((Integer)info);
 		}else if (ordre.equals("ajout enemy")) {
 			this.frmArene.ajoutEnemy((JLabel)info);
+		}else if (ordre.equals("SCORE")) {
+			System.out.print("passage dans la boucle controle");
+			this.frmArene.updateScore(Integer.parseInt((String)info));
 		}
 	}
 

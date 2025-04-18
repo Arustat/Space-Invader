@@ -35,7 +35,7 @@ public class WaveManager implements Global {
         long currentTime = System.currentTimeMillis();
         
         // Vérifie si on peut spawner un nouvel ennemi
-        if (currentWave.size() < enemiesPerWave && 
+        if (currentWave.size() < enemiesPerWave && 	
             currentTime - lastSpawnTime >= spawnDelay) {
             
             // Choisit un type d'ennemi aléatoire

@@ -21,6 +21,8 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import modele.HealthBar;
 import outils.son.Son;
+import java.awt.BorderLayout;
+import javax.swing.SwingConstants;
 
 /**
  * Frame de l'arène du jeu
@@ -31,7 +33,7 @@ public class Arene extends JFrame implements Global {
 
 	private JPanel contentPane;
 	private JTextField txtSaisie;
-	private JLabel scoreLabel;
+	private JPanel scorePanel; // Panel pour le score
 	private Son[] lesson = new Son[SON.length];
 	private JPanel jpnJeu ;
 	private JPanel jpnEnemy;
@@ -40,6 +42,7 @@ public class Arene extends JFrame implements Global {
 	private JTextArea txtChat ;
 	private ArrayList<Layer> layers;
 	private JLabel lblGameOver;
+	private int score = 0; // Variable pour stocker le score
 	
 	// Set de touches actuellement pressées
 	private Set<Integer> keysPressed = new HashSet<>();
@@ -225,15 +228,21 @@ public class Arene extends JFrame implements Global {
 		contentPane.add(jpnJeu);
 		jpnJeu.setLayout(null);
 		
-		scoreLabel = new JLabel("Score : 0");
+		// Création du panel de score
+		scorePanel = new JPanel();
+		scorePanel.setBounds(10, 10, 200, 40);
+		scorePanel.setBackground(new java.awt.Color(0, 0, 0, 150)); // Fond semi-transparent
+		scorePanel.setLayout(new java.awt.BorderLayout());
+		
+		JLabel scoreLabel = new JLabel("Score Commun : 0");
 		scoreLabel.setForeground(java.awt.Color.WHITE);
 		scoreLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
-		scoreLabel.setBounds(10, 10, 150, 30);
-		scoreLabel.setVisible(true);
-		contentPane.add(scoreLabel);
+		scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		scorePanel.add(scoreLabel, BorderLayout.CENTER);
 		
-
-        lblGameOver = new JLabel("GAME OVER");
+		contentPane.add(scorePanel);
+		
+		lblGameOver = new JLabel("GAME OVER");
 		lblGameOver.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 48));
 		lblGameOver.setForeground(java.awt.Color.RED);
 		lblGameOver.setBounds(L_ARENE/2 - 150, H_ARENE/2 - 50, 300, 100);
@@ -391,7 +400,16 @@ public class Arene extends JFrame implements Global {
 		});
 	}
 	
-	public void updateScore(JPanel unEnemy) {
-		scoreLabel.setText("Score : " + unEnemy.getPoint());
+	/**
+	 * Met à jour le score affiché
+	 * @param score Le nouveau score à afficher
+	 */
+	public void updateScore(int score) {
+		SwingUtilities.invokeLater(() -> {
+			this.score = score;
+			JLabel scoreLabel = (JLabel)scorePanel.getComponent(0);
+			scoreLabel.setText("Score Commun : " + score);
+			scorePanel.repaint();
+		});
 	}
 }

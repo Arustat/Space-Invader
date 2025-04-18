@@ -30,6 +30,7 @@ public class JeuServeur extends Jeu implements Global {
 	private Timer waveTimer;
 	private int nextEnemyId = 0; // Compteur pour assigner des ID uniques aux ennemis
 	private HashMap<Integer, Enemy> enemiesById = new HashMap<>(); // Map des ennemis par ID
+	private int scoreCommun = 0; // Score commun pour tous les joueurs
 	
 	/**
 	 * Constructeur
@@ -153,6 +154,17 @@ public class JeuServeur extends Jeu implements Global {
 
 	@Override
 	public void reception(Connection connection, Object info) {
+		if (info instanceof String) {
+			String message = (String) info;
+			if (message.startsWith("SCORE")) {
+				System.out.println("JeuServeur: Réception du message SCORE");
+				String[] parts = message.split(SEPARE);
+				if (parts.length > 1) {
+					System.out.println("JeuServeur: Points reçus = " + parts[1]);
+					controle.evenementModele(this, "SCORE", parts[1]);
+				}
+			}
+		}
 		// Vérifiez si le joueur existe dans la collection
 		if (!lesJoueurs.containsKey(connection)) {
 			System.out.println("Connexion non reconnue ou joueur non initialisé");
@@ -272,6 +284,16 @@ public class JeuServeur extends Jeu implements Global {
 				envoi(connection, enemyData);
 			}
 		}
+	}
+
+	/**
+	 * Met à jour le score commun et l'envoie à tous les joueurs
+	 * @param points Points à ajouter au score
+	 */
+	public void updateScoreCommun(int points) {
+		scoreCommun += points;
+		System.out.println("JeuServeur: Nouveau score commun = " + scoreCommun);
+		envoi("SCORE" + SEPARE + scoreCommun);
 	}
 
 }

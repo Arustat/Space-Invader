@@ -44,6 +44,11 @@ public class JeuClient extends Jeu implements Global {
 				System.exit(0);
 			} else if ("GAME_OVER".equals(message)) {
 				this.controle.evenementModele(this, "game over", null);
+			} else if (message.startsWith("SCORE")) {
+				String[] parts = message.split(SEPARE);
+				if (parts.length > 1) {
+					this.controle.evenementModele(this, "SCORE", parts[1]);
+				}
 			} else {
 				this.controle.evenementModele(this, "remplace chat", message);
 			}

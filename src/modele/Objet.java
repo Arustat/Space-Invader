@@ -1,27 +1,27 @@
 package modele;
 
 /**
- * Informations communes � tous les objets (joueurs, murs, boules)
+ * Informations communes à tous les objets (joueurs, murs, boules)
  * @author emds
  *
  */
 public abstract class Objet {
 
-	// propri�t�s
-	protected Integer posX, posY ; // position du jLabel
-	protected Label label ;
+	// propriétés
+	protected int posX = 0, posY = 0; // position du jLabel
+	protected Label label;
 	
 	/**
 	 * @return the posX
 	 */
-	public Integer getPosX() {
+	public int getPosX() {
 		return posX;
 	}
 	
 	/**
 	 * @return the posY
 	 */
-	public Integer getPosY() {
+	public int getPosY() {
 		return posY;
 	}
 	
@@ -35,46 +35,44 @@ public abstract class Objet {
 	/**
 	 * @param posX the posX to set
 	 */
-	public void setPosX(Integer posX) {
+	public void setPosX(int posX) {
 		this.posX = posX;
 	}
 
 	/**
 	 * @param posY the posY to set
 	 */
-	public void setPosY(Integer posY) {
+	public void setPosY(int posY) {
 		this.posY = posY;
 	}
 
 	/**
-	 * contr�le si l'objet actuel touche l'objet pass� en param�tre
+	 * contrôle si l'objet actuel touche l'objet passé en paramètre
 	 * @param objet
 	 * @return vrai si les 2 objets se touchent
 	 */
 	public boolean toucheObjet(Objet objet) {
-		if (objet.label==null) {
+		if (objet == null || objet.label == null || objet.label.getjLabel() == null) {
 			return false;
-		} else {
-			if (objet.label.getjLabel()==null) {
-				return false;
-			} else {
-				// Vérifier que les deux objets sont visibles
-				if (!this.label.getjLabel().isVisible() || !objet.label.getjLabel().isVisible()) {
-					return false;
-				}
-			
-				int l_obj = objet.label.getjLabel().getWidth();
-				int h_obj = objet.label.getjLabel().getHeight();
-				int l_this = this.label.getjLabel().getWidth();
-				int h_this = this.label.getjLabel().getHeight();
-				
-				return !((this.posX+l_this<objet.posX ||
-					this.posX>objet.posX+l_obj) || 
-					(this.posY+h_this<objet.posY ||
-					this.posY>objet.posY+h_obj));
-			}
 		}
-	}
-
+		
+		if (this.label == null || this.label.getjLabel() == null) {
+			return false;
+		}
+		
+		// Vérifier que les deux objets sont visibles
+		if (!this.label.getjLabel().isVisible() || !objet.label.getjLabel().isVisible()) {
+			return false;
+		}
 	
+		int l_obj = objet.label.getjLabel().getWidth();
+		int h_obj = objet.label.getjLabel().getHeight();
+		int l_this = this.label.getjLabel().getWidth();
+		int h_this = this.label.getjLabel().getHeight();
+		
+		return !((this.posX+l_this<objet.posX ||
+			this.posX>objet.posX+l_obj) || 
+			(this.posY+h_this<objet.posY ||
+			this.posY>objet.posY+h_obj));
+	}
 }
